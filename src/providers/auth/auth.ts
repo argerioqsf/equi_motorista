@@ -11,7 +11,7 @@ notificado = false;
 status = false;
 position:any = "off";
 cont = 0;
-userp = "vazio"; 
+userp = "vazio";  
 image;
 name;
 aceito = false;
@@ -20,6 +20,10 @@ constructor(private afDB:AngularFireDatabase) {}
 
   confirmDriver(){
     return this.afDB.object(`/DriverProfile`).valueChanges();
+  }
+
+  atualizar_versao(user){
+    firebase.database().ref(`/DriverProfile/${user}/ver`).set(this.ver);
   }
 
 	getVer(){
@@ -52,13 +56,7 @@ constructor(private afDB:AngularFireDatabase) {}
 		return firebase.database().ref(`/DriverProfile/${user}/status`).update({status:"stop"});
         
 	}
-	rejeitar(user): Promise<any>{
-        
-		this.setUserp("vazio");
-        
-		return firebase.database().ref(`/DriverProfile/${user}`).update({viagens:"vazio"});
-        
-	}
+	
 	rejeitados(userp,user): Promise<any>{
 		
 		return firebase.database().ref(`/DriverProfile/${user}/rejeitados`).set(userp);
@@ -77,10 +75,7 @@ constructor(private afDB:AngularFireDatabase) {}
 		firebase.database().ref(`/DriverProfile/${user}/status`).update({status:"go"});
 		return firebase.database().ref(`/viagens/${this.userp}`).update({status:"go"});
 	}
-	driveron(cont,user,name,image,hora,min,ano,mes,dia): Promise<any>{
-		
-		this.image = image;
-		this.name = name;
+	driveron(cont,user,hora,min,ano,mes,dia): Promise<any>{
 		this.position = cont;
 		let viagens = "vazio";
 		let status = "stop";
@@ -90,13 +85,14 @@ constructor(private afDB:AngularFireDatabase) {}
 		if(this.userp != "vazio"){
 			viagens = this.userp;
 		}
-		return firebase.database().ref(`/DriverProfile/${user}`).update({DataHora:this.position,
+		return firebase.database().ref(`/DriverProfile/${user}`).update({
+                                    DataHora:cont,
 																		status:{hora:hora,
-																				min:min,
-																				status:status,
-																				ano:ano,
-																				mes:mes,
-																				dia:dia},
+                                            min:min,
+                                            status:status,
+                                            ano:ano,
+                                            mes:mes,
+                                            dia:dia},
 																		viagens:viagens,
 																		rejeitados:"vazio",
 																		ver:this.ver});

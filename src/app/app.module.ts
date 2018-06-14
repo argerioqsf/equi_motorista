@@ -4,9 +4,10 @@ import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 
 import { MyApp } from './app.component';
 import { HomePage } from '../pages/home/home';
-import { ListPage } from '../pages/list/list';
 import { LoginPage } from '../pages/login/login';
 import { ResetPasswordPage } from '../pages/reset-password/reset-password';
+import { ProfilePage } from '../pages/profile/profile';
+import { SviagensPage } from '../pages/sviagens/sviagens';
 import { SignupPage } from '../pages/signup/signup';
 
 import { StatusBar } from '@ionic-native/status-bar';
@@ -20,15 +21,19 @@ import { AndroidPermissions } from '@ionic-native/android-permissions';
 import { AngularFireModule } from 'angularfire2';
 import { AngularFireDatabaseModule, AngularFireDatabase } from 'angularfire2/database';
 import { AngularFireAuthModule } from 'angularfire2/auth';
+import { AudioProvider } from '../providers/audio/audio';
+import { NativeAudio } from '@ionic-native/native-audio';
+import { ProfileProvider } from '../providers/profile/profile';
 
 @NgModule({
   declarations: [
     MyApp,
     HomePage,
-    ListPage,
     LoginPage,
     ResetPasswordPage,
-    SignupPage
+    SignupPage,
+    SviagensPage,
+    ProfilePage
   ],
   imports: [
     BrowserModule,
@@ -41,10 +46,11 @@ import { AngularFireAuthModule } from 'angularfire2/auth';
   entryComponents: [
     MyApp,
     HomePage,
-    ListPage,
     LoginPage,
     ResetPasswordPage,
-    SignupPage
+    SignupPage,
+    SviagensPage,
+    ProfilePage
   ],
   providers: [
     StatusBar,
@@ -53,7 +59,10 @@ import { AngularFireAuthModule } from 'angularfire2/auth';
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     BackgroundMode,
     AuthProvider,
-    AndroidPermissions
+    AndroidPermissions,
+    AudioProvider,
+    NativeAudio,
+    ProfileProvider
   ]
 })
 export class AppModule {}

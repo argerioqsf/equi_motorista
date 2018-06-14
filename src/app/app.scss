@@ -1,5 +1,40 @@
 // http://ionicframework.com/docs/theming/
 
+#foto{
+	height: 100px;
+    width: 100px;
+    border: 1px solid #fff;
+    border-radius: 50%;
+    display: inline-block;
+    margin-left: 4px;
+	margin-right: auto;
+	box-shadow: 0 2px 13px rgba(0, 0, 0, 0.7);
+}
+
+
+.vazio{
+	
+	 color: #CCCCCC;
+}
+
+#center4{
+
+	background-image: url("../assets/images/fundoP2.jpg");
+	background-size: 100% 100%;
+	width: 100%;
+	height: auto;
+
+}
+
+#center3{
+	margin-top: 120px;
+	padding: 10px;
+	display: flex;
+	justify-content: center;
+	width: 100%;
+
+}
+
 
 // App Global Sass
 // --------------------------------------------------
