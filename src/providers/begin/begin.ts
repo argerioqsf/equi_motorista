@@ -5,6 +5,10 @@ import { AngularFireDatabase } from 'angularfire2/database';
 import { AuthProvider } from '../../providers/auth/auth';
 import { Insomnia } from '@ionic-native/insomnia';
 import { LocalNotifications } from '@ionic-native/local-notifications';
+import { Observable } from 'rxjs/Observable';
+//import { NavController } from 'ionic-angular';
+import { AudioProvider } from '../audio/audio';
+import { Vibration } from '@ionic-native/vibration';
 
 /*
   Generated class for the BeginProvider provider.
@@ -26,7 +30,10 @@ export class BeginProvider {
               private afDB: AngularFireDatabase,
               private authProvider: AuthProvider,
               private insomnia: Insomnia,
-              private localNotifications: LocalNotifications) {
+              private localNotifications: LocalNotifications,
+              //private navCtrl: NavController,
+              private audio: AudioProvider,
+              private vibration: Vibration) {
     console.log('Hello BeginProvider Provider');
   }
 
@@ -56,6 +63,7 @@ export class BeginProvider {
                        }else if(usuario.status.status == "aceito"){
                           resolve({status:usuario.status.status,viagens:usuario.viagens});
                                 }else{
+                                  console.log("Erro");
                                   resolve("Erro");
                                 }
                         
@@ -98,6 +106,7 @@ export class BeginProvider {
                       }
                
                },error=>{
+                 console.log("Erro");
                  resolve("Erro");
                });
                                 
@@ -143,6 +152,7 @@ export class BeginProvider {
                       }
                }
                },error=>{
+                 console.log("Erro");
                 resolve("Erro");
               });
                                 
@@ -151,17 +161,19 @@ export class BeginProvider {
             that.authProvider.setposition(usuario.DataHora);
             console.log("stop");
             that.authProvider.setUserp(usuario.viagens);
-            that.authProvider.rejeitadosFim(that.user);
+            that.authProvider.rejeitadosFim(user);
             //that.toast("setuserp 1" + usuario.viagens);
             that.authProvider.setstatus(true);
             resolve({status:usuario.status.status,
                       viagens:usuario.viagens,});
             
           }else{
+            console.log("Erro");
             resolve("Erro");
           }
           
       },error =>{
+        console.log("Erro");
         resolve("Erro");
       });
     });
@@ -169,5 +181,104 @@ export class BeginProvider {
 
   }); 
   }
+
+  statusCorrida(){
+    let that = this;
+    let observable = new Observable(observer => { 
+  setTimeout(() => {
+      that.user = that.dadosprovider.getuser().then((user) =>{
+		      that.dadosprovider.getDriver(user).on("value", userProfileSnapshot => {
+			      let result:any = userProfileSnapshot.val();
+            
+			      if(that.authProvider.getstatus()  == true){
+                
+				    console.log("result driveron ",result);
+					
+					  if(that.authProvider.getAceito() == false){
+					     
+						console.log("result[i].id ",result.id);
+						console.log("user ",that.user);
+						console.log("resulti user ",result.id);
+                      
+						console.log("userPass antes ",result.viagens);
+                        
+						let userPass = "vazio";
+                        
+						if(result.viagens != "vazio" && result.status != "off"){
+							
+						    if(result.status.status != "go" && result.status.status != "aceito"){
+                  observer.next({info:"new",userPass: result.viagens});
+							  }
+					  }                        
+					}
+			}
+    });
+  });
+}, 500);
+});
+  return observable;
+  }
+
+  getInfo(userPass){
+    return new Promise((resolve,reject) => {
+    this.dadosprovider.getviagens(userPass).once("value", (userProfileSnapshot:any) =>{
+      let result = userProfileSnapshot.val();
+      if(this.authProvider.getstatus()  == true){
+        console.log("result ",result);
+        //this.navCtrl.popAll();
+        this.authProvider.Ocupado(true);
+        this.localNotifications.schedule({
+          id: 1,
+          text: 'solicitação de viagem para:' + result.destino,
+          icon:'../assets/images/icon4.png',
+          color: 'FFFF00'
+        });
+        this.audio.play('tabSwitch');	
+        this.vibration.vibrate([5000,5000,5000]);
+        resolve({status:"OK",result:result});
+      }else{
+        resolve({status:"Erro"});
+      }
+    },error=>{
+      resolve({status:"Erro"});
+    });
+  });          
+  }
+
+  getuser(user){
+    let observable = new Observable(observer => { 
+      this.dadosprovider.getviagens(user.user).on("value", userProfileSnapshot => {
+        if(userProfileSnapshot.val().status == "off"){
+          this.audio.stop('tabSwitch');
+          this.insomnia.allowSleepAgain()
+					.then(
+						() => console.log('success'),
+						() => console.log('error')
+          );
+          this.authProvider.setUserp("vazio");
+					this.localNotifications.clear(1);
+          this.vibration.vibrate(0);
+          this.localNotifications.schedule({
+						id: 1,
+						text: 'O usuario cancelou a viagem',
+						icon:'../assets/images/icon4.png',
+						color: 'FFFF00'
+					});
+					this.authProvider.stop(this.user);
+          this.authProvider.Ocupado(false);
+          this.dadosprovider.stopUser(user.user);
+          this.dadosprovider.stopviagens(user.user);
+          this.authProvider.setAceito(false);
+          observer.next({status:"off"});
+        }else{
+          observer.next({status:userProfileSnapshot.val().status});
+        }
+      },error=>{
+        observer.next({status:"Erro"});
+      });
+    });
+
+    return observable
+	}
 
 }

@@ -340,11 +340,11 @@ export class MyApp {
 
 	let difsec = atu - this.net;
 
-	console.log("atu: ",atu);
+	//console.log("atu: ",atu);
 
-	console.log("net: ",this.net);
+	//console.log("net: ",this.net);
 
-	console.log("diferença: ",difsec);
+	//console.log("diferença: ",difsec);
    
 	if((difsec >= 5 || (difsec > -54 && difsec < 0)) && this.off == false){
   
@@ -380,9 +380,9 @@ export class MyApp {
         
 		    setTimeout (function () {
 				
-				
+          
 			if(that.authProvider.getstatus() == true){
-
+        console.log("dataHoje");
 				if(that.authProvider.getUserp() == "vazio"){
 
 					that.audio.stop('tabSwitch');
@@ -411,7 +411,7 @@ export class MyApp {
 			that.dia = new Date().getDate();
                 
 		    that.dataNow = hor + ":" + min;
-                
+        console.log("Hora atualizada, ", that.dataNow);        
 		    that.authProvider.setStatus(that.horas,that.minutos,that.ano,that.mes,that.dia,that.user).then(() =>{
 				
 			}).catch(error =>{

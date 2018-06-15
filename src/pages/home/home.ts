@@ -96,7 +96,11 @@ cronost = "0";
         public viewCtrl: ViewController,
         private begin: BeginProvider) {
       
-	   console.log("................construtor......................");
+     console.log("................construtor......................");
+     
+
+    ///////////iNICIO CONSTRUTOR///////////////////////
+
 
 	   this.platform.ready().then(() => {
 		this.platform.registerBackButtonAction(() => {
@@ -135,7 +139,7 @@ cronost = "0";
           buttons: [
             {
               text: 'sim',
-              handler: () => {this.beginer();}
+              handler: () => {this.beginer()}
             },
             {
               text: 'não',
@@ -144,6 +148,8 @@ cronost = "0";
               ]
           });
           alert1.present();
+      }else if(resp.viagens == "vazio"){
+        this.NewCorrida();
       }else if(resp.status == "aceito"){
         this.recebido = true;
         this.not = true;
@@ -152,9 +158,10 @@ cronost = "0";
         this.ocupado = true;
         this.directionsDisplay.setMap(this.map);
         this.calculateAndDisplayRoute(resp.latlon,resp.way);  
+        this.NewCorrida();
         this.getuser(this.info);
         this.getUsuario();
-      }else if(resp.status == "aceito"){
+      }else if(resp.status == "go"){
         this.toast("Corrida já iniciada. ");
         this.recebido = true;
         this.not = true;
@@ -164,145 +171,69 @@ cronost = "0";
         this.corrida = true;
         this.directionsDisplay.setMap(this.map);
         this.calculateAndDisplayRoute(resp.latlon,resp.way);
+        this.NewCorrida();
         this.getuser(this.info);
         this.getUsuario();
       }else if(resp.status == "stop"){
-        this.cronos = 60;
         this.disTime = true;
+        this.NewCorrida();
         this.cronometro2();
-      } 
+        this.cronos = 60;
+      }else{
+        this.NewCorrida();
+      }
+      
     });
   }
     
-//FIM DO CONSTRUTOR
+    ///////////FIM DO IONVIEWDIDENTER///////////////////////
 
 openMenu() {
-
 	if(this.authProvider.getPosition() != "off"){
-
 		this.menuCtrl.open();
-
     }
-
   }
 
   ColorStatus(){
-	 
 	const that = this;
-
 		setTimeout (function () {
-
 			if(that.authProvider.getstatus() == true){
-				 
 				that.colorloc = 'secondary';
-
 			}
 			if(that.authProvider.getstatus() == false){
-				
 				that.colorloc = 'danger';
-
 			}
-
 	      that.ColorStatus();
-	   
        },2000);
-	
   }
+
+    NewCorrida(){
+      this.begin.statusCorrida().subscribe((info:any)=>{
+        if(this.recebido == false && info.info == "new"){
+          this.userPass = info.userPass;
+          console.log("userPass ", this.userPass);
+          this.authProvider.setUserp(this.userPass);
+          this.getInfo(info.userPass);
+        }
+      });
+    }
     
+    ///////////iNICIO IONVIEWDIDENTER///////////////////////
+
     ionViewDidEnter() {
-        
 		 const that = this;
-		
 		   setTimeout (function () {
        that.GoogleMap();
        },2000);
 		//this.toast("entrou");
-		
-		this.user = this.dadosprovider.getuser();
-        
+    this.dadosprovider.getuser().then((user) =>{
+    this.user = user;
+    });
 		console.log("user ", this.user);
-        
 		this.refviagens = this.afDB.list('/viagens').valueChanges();
-		
 		console.log("home.position ",this.Position);
-        
-		this.driveron = this.afDB.list(`/DriverProfile`).valueChanges();
-		/*
-		this.driveron.subscribe( result => {
-			
-			
-			
-			this.status = this.authProvider.getstatus();
-			
-			if(this.status == false && this.ocupado != true){
-				
-				this.userPass = "vazio";
-				
-			}
-            
-			//this.authProvider.contOff(result.length - 1);
-            
-			if(this.authProvider.getstatus()  == true){
-                
-				console.log("result driveron ",result);
-				
-	
-				this.Position = this.authProvider.getPosition();
-	
-				for(var i = 0; i < result.length; i++ ){
-
-					if(result[i].status != true && result[i].status != false){
-						
-					//console.log("position  ",this.Position);
-					//console.log("user  ",this.user);
-					
-					if(result[i].id == this.user  && this.recebido == false && this.authProvider.getAceito() == false){
-					    
-						console.log("result[i].id ",result[i].id);
-						console.log("user ",this.user);
-						console.log("resulti user ",result[i].id);
-						
-						//if(result[i].user != this.user ){
-							
-						//this.authProvider.driveron(this.Position,this.user).then(() =>{
-				    	this.authProvider.seCont();
-				    	//});
-							
-						//}
-                        
-						if(result[i].status == "off"){
-							//this.authProvider.setstatus(false);
-						}
-                        
-						console.log("userPass antes ",result[i].viagens);
-                        
-						this.userPass = "vazio";
-                        
-						if(result[i].viagens != "vazio" && result[i].status != "off"){
-							
-						    if(result[i].status.status != "go" && result[i].status.status != "aceito"){
-								
-								console.log("userPass ",result[i].viagens);
-								this.userPass = result[i].viagens;
-								this.authProvider.setUserp(this.userPass);
-								//this.toast("setuserp 2"+this.userPass);
-								this.getInfo();
-								
-							}
-					}
-                        
-                        
-					}
-				}}
-			}
-		});*/
-        
-			//função que dis oq fazer depois q a notificação e clicada
-        	let noti_update = this.localNotifications.on("click").subscribe(up =>{
-
-          });
-        	
-        
+		//função que dis oq fazer depois q a notificação e clicada
+    let noti_update = this.localNotifications.on("click").subscribe(up =>{});
 		/////////////////geolocalizacao////////////////
 		
 		this.geolocation.getCurrentPosition({ enableHighAccuracy: true }).then((resp) => {
@@ -311,7 +242,6 @@ openMenu() {
 			this.lon = resp.coords.longitude;
 			this.lon = parseFloat(this.lon.toFixed(10));
 			this.accuracy = resp.coords.accuracy;
-
 			if(resp.coords.speed > 0){
 				this.velocidade = this.velocidade * 3.6;
 				this.velocidade = parseFloat(resp.coords.speed.toFixed(2));
@@ -320,9 +250,9 @@ openMenu() {
 			//alert(this.lat,this.lon);
 			console.log('accuracy atual', this.accuracy);
 			this.mloc();
-		}).catch((error) => {
+		  }).catch((error) => {
 		  	console.log('Error getting location', error);
-		});
+		  });
 			let watch = this.geolocation.watchPosition({ enableHighAccuracy: true });
 			watch.subscribe((data) => {
 			//this.accuracy = data.coords.accuracy;
@@ -330,277 +260,141 @@ openMenu() {
 			this.lat = parseFloat(this.lat.toFixed(10));
 			this.lon = data.coords.longitude;
 			this.lon = parseFloat(this.lon.toFixed(10));
-
-
 				if(data.coords.speed > 0){
 					this.velocidade = this.velocidade * 3.6;
-				this.velocidade = parseFloat(data.coords.speed.toFixed(2));
+				  this.velocidade = parseFloat(data.coords.speed.toFixed(2));
 				}
-	
 				 console.log("velocidade soma, ",this.velo);
-			this.velo = data.coords.speed;
-
+			   this.velo = data.coords.speed;
 				if(this.authProvider.getstatus()  == true){
-					
-			
-					console.log("salvando lat lon",this.lat,this.lon);
-					
-			this.dadosprovider.latlon(this.lat,this.lon).then(() =>{
-				
-			});
+          console.log("salvando lat lon",this.lat,this.lon);
+          this.dadosprovider.latlon(this.lat,this.lon).then(() =>{});
 				}
-				//this.dadosprovider.dados(this.lat,this.lon).then(newEvent => {
-				
-			//});
-				
-			let latLng = new google.maps.LatLng(this.lat,this.lon);
-		   if(this.inicial == 1){
-		    this.markers.setPosition(latLng);
-			}
-			console.log('localização atual', this.lat,this.lon);
-			//alert(this.lat,this.lon);
-			console.log('accuracy atual', this.accuracy);
-			});
+			  let latLng = new google.maps.LatLng(this.lat,this.lon);
+		    if(this.inicial == 1){
+		      this.markers.setPosition(latLng);
+			  }
+        console.log('localização atual', this.lat,this.lon);
+        //alert(this.lat,this.lon);
+        console.log('accuracy atual', this.accuracy);
+        });
 
 		/////////////////geolocalizacao////////////////
-
-
     }
-	//FIM DO ionViewDidEnter
+
+	/////////////////FIM DO ionViewDidEnter////////////////////////////
 	
 	cronometro(){
 
 			const that = this;
-		
 			setTimeout (function () {
-
 				if(that.corrida == true){
-
 					that.cronos++;
-
 					that.cronost = that.cronos.toString();
-
 					if(that.cronos == 60){
 						that.cronos = 0;
 						that.cronost = that.cronos.toString();
 						that.cronom++;
-						that.cronomt = that.cronom.toString();
-					}
-
+						that.cronomt = that.cronom.toString();}
 					if(that.cronom == 60){
 						that.cronom = 0;
 						that.cronomt = that.cronom.toString();
 						that.cronoh++;
-						that.cronoht = that.cronoh.toString();
-					}
+						that.cronoht = that.cronoh.toString();}
 					if(that.cronos < 10){
-
-						that.cronost = "0" + that.cronos.toString();
-					}
+						that.cronost = "0" + that.cronos.toString();}
 					if(that.cronoh < 10){
-
-						that.cronoht = "0" + that.cronoh.toString();
-					}
-
+						that.cronoht = "0" + that.cronoh.toString();}
 				that.cronometro();
-
-			}else{
-
-				that.cronom = 0;
-				that.cronoh = 0;	
-				that.cronomt = "0";
-				that.cronoht = "0";
-				that.cronos = 0;	
-				that.cronost = "0";
-			}
-
+			 }else{
+          that.cronom = 0;
+          that.cronoh = 0;	
+          that.cronomt = "0";
+          that.cronoht = "0";
+          that.cronos = 0;	
+          that.cronost = "0";
+			 }
 		   },1000);
-
 		  }
 
 		  cronometro2(){
-
 			const that = this;
-			
 			setTimeout (function () {
-
 				if(that.userPass != "vazio" && that.not == false){
-
 					that.cronos--;
 					console.log("cronos : ", that.cronos);
 					that.cronost = that.cronos.toString();
-
 					if(that.cronos == 0){
 						that.cronos = 0;
 						that.disTime = false;
 						that.audio.stop('tabSwitch');
-						
 					}
-
 					if(that.cronos == -7){
 						that.cronos = 0;
 						that.rejeitar();
 					}else{
 						that.cronometro2();
 					}
-
-				
-
 			}else{
-
 			 	that.cronos = 0;
-			}
-
-		   },1000);
-
-		  }
-	
-
+      }},1000);}
+      
+    ///////////iNICIO DO GETINFO///////////////////////
     
-    	getInfo(){
-		 /*
-			this.refviagens.subscribe(result => {
-			
-			if(this.authProvider.getstatus()  == true){
-				
-				console.log("atualização");
-                
-					for(var i = 0; i < result.length; i++ ){
-						
-						if(result[i].user == this.userPass && this.userPass != "vazio"){
-							
-							console.log("status viagem ",result[i].status);
-							
-						   if(this.recebido == false){
-
-							this.navCtrl.popAll();
-							//this.authProvider.setAceito(true);
-							this.authProvider.Ocupado(true);
-							this.cronos = 60;
-							this.disTime = true;
-							this.cronometro2();
-
-							 this.localNotifications.schedule({
-							id: 1,
-							text: 'solicitação de viagem para:' + result[i].destino,
-							icon:'../assets/images/icon4.png',
-							color: 'FFFF00'
-							});
-								
-							this.backgroundMode.unlock();
-						
-							//this.backgroundMode.moveToForeground();	
-
-						    this.audio.play('tabSwitch');	
-
-							this.vibration.vibrate([5000,5000,5000]);
-							
-		    				console.log("viagem nova ");
-                               
-							this.info = result[i];
-                               
-							this.recebido = true;
-                               
-							this.getuser(this.info);
-                               
-							this.getUsuario();
-							this.cronometro2();
-							   
-						    }
-							
-						   }
-						
-						}//FIM DO FOR
-                       
-	    				}
-            });*/
+      getInfo(userPass){
+        this.begin.getInfo(userPass).then((resp:any) =>{
+            if(this.recebido == false){
+              if(resp.status != "Erro"){
+              this.cronos = 60;
+              this.disTime = true;
+              this.cronometro2(); 
+              this.backgroundMode.unlock();
+              console.log("viagem nova ");
+              this.info = resp.result;
+              this.recebido = true;
+              this.getuser(resp.result);
+              this.getUsuario();
+              this.cronometro2();
+            }
+            }
+        });
 		
-	}//FIM DO getInfo
+      }//FIM DO getInfo
+  
+      getuser(user){
+      this.begin.getuser(user).subscribe((resp:any)=>{
+        console.log("status, ",resp.status);
+        if(this.recebido == true && resp.status == "off"){
+          this.passageiro= {};
+          this.corrida = false;
+          this.ocupado = false;
+          this.authProvider.rejeitar(this.user).then(() =>{
+          this.recebido = false;
+          this.display = true;
+          });
+          console.log("cancelou");
+          this.toast("viagem cancelada pelo passageiro");
+          this.directionsDisplay.setMap(null);
+          console.log("cancelou2");
+          let myloc = {lat: this.lat,lng: this.lon};
+          this.map.setCenter(myloc);
+          console.log("cancelou3");
+          this.not = false;
+          //this.livre();
+          console.log("cancelou4");
+          this.info = {};
+          this.userPass = "vazio";
+        }
+      });
+      }
     
-    getuser(user){
-        
-		this.dadosprovider.getviagens(user.user).on("value", userProfileSnapshot => {
-            
-			console.log('user ', userProfileSnapshot.val());
-			//console.log('user status ', userProfileSnapshot.val().status);
-			console.log("usert, usermy ",this.usert,", ", this.user);
-			
-			if(userProfileSnapshot.val().status == "off"){
-
-				this.authProvider.setUserp("vazio");
-
-				if(this.recebido == true){
-
-					this.passageiro= {};
-
-					this.recebido = false;
-
-					this.corrida = false;
-					
-					this.audio.stop('tabSwitch');
-
-					this.insomnia.allowSleepAgain()
-					.then(
-						() => console.log('success'),
-						() => console.log('error')
-					);
-
-					this.authProvider.setUserp("vazio");
-					this.localNotifications.clear(1);
-					this.vibration.vibrate(0);
-					
-					this.ocupado = false;
-					this.localNotifications.schedule({
-						id: 1,
-						text: 'O usuario cancelou a viagem',
-						icon:'../assets/images/icon4.png',
-						color: 'FFFF00'
-					});
-					this.authProvider.stop(this.user);
-					this.authProvider.Ocupado(false);
-					this.authProvider.rejeitar(this.user).then(() =>{
-					this.recebido = false;
-					this.display = true;
-					this.authProvider.setAceito(false);
-					});
-					
-					this.pesq = 0;
-					console.log("cancelou");
-					this.toast("viagem cancelada pelo passageiro");
-					this.directionsDisplay.setMap(null);
-					console.log("cancelou2");
-					let myloc = {lat: this.lat,lng: this.lon};
-        			this.map.setCenter(myloc);
-					console.log("cancelou3");
-					
-					this.not = false;
-					this.usert = "vazio";
-					//this.livre();
-				    console.log("cancelou4");
-					this.dadosprovider.stopUser(this.info.user);
-					this.dadosprovider.stopviagens(this.userPass);
-					this.info = {};
-					this.userPass = "vazio";
-				}}
-			
-			  
-			 
-		     
-			
-		});
-
-	}
-    
-    getUsuario(){
-        
-		console.log("info.user ",this.info.user);
-		this.dadosprovider.getUsuario(this.info.user).on("value", userProfileSnapshot => {
-			console.log("userprofile ",userProfileSnapshot.val());
-			this.passageiro = userProfileSnapshot.val();
-			
-		});
-		
-	}
+      getUsuario(){
+      console.log("info.user ",this.info.user);
+      this.dadosprovider.getUsuario(this.info.user).on("value", userProfileSnapshot => {
+        console.log("userprofile ",userProfileSnapshot.val());
+        this.passageiro = userProfileSnapshot.val();
+      });
+	    }
     
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     
@@ -609,7 +403,7 @@ openMenu() {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
     aceito(info){
-
+      this.audio.stop('tabSwitch');
 		this.not = true;
 
 		this.disTime = false;
@@ -624,7 +418,7 @@ openMenu() {
 				() => console.log('error')
 			);	
         //PARA O TOQUE DE ALERTA
-		this.audio.stop('tabSwitch');
+		
 		this.vibration.vibrate(0);
 		console.log("this.ocupado2 ",this.ocupado);
 		
@@ -1078,24 +872,7 @@ openMenu() {
 		
 		
 	}//FIM DE end
-	
-	valor(){
-		
-		  console.log("velocidade soma, ",this.velo);
-		 const that = this;
-		if(this.corrida == true){
-			
-		setTimeout (function () {
-			
-            
-			that.velos.push(that.velo);
-			
-			that.valor();
-       },60000);
-		
-		}
-		
-	}
+
     
     addMarker(lat: number, lng: number): void {
         
