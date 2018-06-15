@@ -16,14 +16,22 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 import { FIREBASE_CREDENTIALS } from './credentials';
 
 import { BackgroundMode } from '@ionic-native/background-mode';
-import { AuthProvider } from '../providers/auth/auth';
 import { AndroidPermissions } from '@ionic-native/android-permissions';
+import { LocalNotifications } from '@ionic-native/local-notifications';
+import { NativeAudio } from '@ionic-native/native-audio';
+import { Geolocation } from '@ionic-native/geolocation';
+import { Insomnia } from '@ionic-native/insomnia';
+import { Vibration } from '@ionic-native/vibration';
 import { AngularFireModule } from 'angularfire2';
 import { AngularFireDatabaseModule, AngularFireDatabase } from 'angularfire2/database';
 import { AngularFireAuthModule } from 'angularfire2/auth';
+
+import { AuthProvider } from '../providers/auth/auth';
 import { AudioProvider } from '../providers/audio/audio';
-import { NativeAudio } from '@ionic-native/native-audio';
 import { ProfileProvider } from '../providers/profile/profile';
+import { DadosProvider } from '../providers/dados/dados';
+import { BeginProvider } from '../providers/begin/begin';
+
 
 @NgModule({
   declarations: [
@@ -59,10 +67,16 @@ import { ProfileProvider } from '../providers/profile/profile';
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     BackgroundMode,
     AuthProvider,
+    LocalNotifications,
     AndroidPermissions,
-    AudioProvider,
     NativeAudio,
-    ProfileProvider
+    Geolocation,
+    Insomnia,
+    Vibration,
+    AudioProvider,
+    ProfileProvider,
+    DadosProvider,
+    BeginProvider
   ]
 })
 export class AppModule {}

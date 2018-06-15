@@ -56,7 +56,7 @@ export class MyApp {
 	  
 	this.initializeApp();
   
-  this.authProvider.atualizar_versao(this.user);
+
   
 	//firebase.initializeApp(FIREBASE_CREDENTIALS);
 	
@@ -91,7 +91,8 @@ export class MyApp {
 					if(userProfileSnapshot.val().status.status == "stop"){
 						this.setBackground("Você está ativo","Será notificado quando houver solicitações de viagens novas.",);
 					}
-				}
+        }
+        this.authProvider.atualizar_versao(this.user);
 				this.name = userProfileSnapshot.val().firstName + " " + userProfileSnapshot.val().lastName;
 				this.userProfile2 = userProfileSnapshot.val();
 				this.imageuid = userProfileSnapshot.val().imageuid;

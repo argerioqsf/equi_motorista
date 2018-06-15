@@ -26,10 +26,18 @@ constructor(private afDB:AngularFireDatabase) {}
     firebase.database().ref(`/DriverProfile/${user}/ver`).set(this.ver);
   }
 
+  rejeitar(user): Promise<any>{
+        
+		this.setUserp("vazio");
+        
+		return firebase.database().ref(`/DriverProfile/${user}`).update({viagens:"vazio"});
+        
+	}
+
 	getVer(){
 		return this.ver;
 	}
-	setNot(not){
+	Ocupado(not){
 		this.notificado = not;
 	}
 	getNot(){

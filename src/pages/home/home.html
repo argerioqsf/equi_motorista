@@ -1,18 +1,350 @@
 <ion-header>
-  <ion-navbar>
-    <button ion-button menuToggle>
-      <ion-icon name="menu"></ion-icon>
-    </button>
-    <ion-title>Home</ion-title>
-  </ion-navbar>
 </ion-header>
 
-<ion-content padding>
-  <h3>Ionic Menu Starter</h3>
+<ion-content id="bac">
+	
+		<img (click)="openMenu()" id="menu" src="assets/images/menu.png" />
+		
+		<div id="aceito"  *ngIf='corrida == true'>
+				<div color="secondary">
+						 CORRIDA INICIADA <br>
+					 Tempo total: {{cronoht}}h {{cronomt}}min {{cronost}} seg
+				</div>
+		</div>
 
-  <p>
-    If you get lost, the <a href="http://ionicframework.com/docs/v2">docs</a> will show you the way.
-  </p>
+       <div id="map"></div>
+         <ion-fab *ngIf='recebido == false' bottom right>
+            <button ion-fab [color]="colorloc" (click)="mloc()"><img   src="assets/images/loc.png" /></button>
+         </ion-fab>
+	
+	<!-- ///////////////////////////INICIO-SOLICITADO//////////////////////////////// -->
 
-  <button ion-button secondary menuToggle>Toggle Menu</button>
+	<div id="chamar" *ngIf='userPass != "vazio" && not == false && disTime == true  && cronos >= 0'>
+
+			<ion-list no-lines>
+		
+		
+		<ion-row id="center2">
+		
+			<div *ngIf='corrida != true && not == false'>
+				<img src="assets/images/aceitar.png" id="play2" (click)="aceito()" />
+			</div>
+
+			
+
+			<div id="time" *ngIf='corrida != true'>
+					<div id="anima"></div>
+					<h3 *ngIf='cronos >= 39' style="margin-top:15px;color:green;text-align:center" >{{cronos}} seg</h3>
+					<h3 *ngIf='cronos < 39 && cronos >= 0' style="margin-top:15px;color:red;text-align:center" >{{cronos}} seg</h3>
+			</div>
+			
+		
+		
+			<div *ngIf='corrida != true'>
+						<img src="assets/images/rejeitar.png" id="play2" (click)="rejeitar()" />
+			</div>
+		
+		</ion-row>
+		
+		<ion-row style="color:white" id="center2">
+
+				
+
+		</ion-row>
+		
+		<ion-item style=" background-color: rgba(10,23,55,0)"> 
+			
+			<ion-row id="center">
+				
+				
+						
+							<div >
+		
+									
+					
+											<img  id="fotos" src={{passageiro.image}}  />
+					
+									
+					
+								</div>
+				
+								&nbsp;	&nbsp;
+			
+					<div style="margin-top:25px">
+		
+					<h3 id="info"> <a style="color:yellow">{{passageiro.firstName}} {{passageiro.lastName}}</a> <br>
+						{{info.time}}min<br> 
+						{{velocidade}}Km/h
+		
+					</h3>
+						
+					</div>
+				
+		
+			</ion-row>
+			
+		</ion-item>
+		
+		<div id="divs">
+		
+				
+		<div id="center2">
+			<div id="linha2" ></div>
+		</div>
+		
+		
+		<div  style="background-color: rgba(10,23,55,0)">
+		
+		<h6 style="color:rgb(247, 244, 83);text-align:center">	Destino: <a id="info">{{info.destino}}</a> </h6>
+
+		<h6 style="color:rgb(247, 244, 83);text-align:center">	Origem: <a id="info">{{info.myaddr}}</a> </h6>
+		
+		<h6 *ngIf='info.obs == "vazio"' style="color:rgb(247, 244, 83);text-align:center">	Referência:	<a id="info">Sem Referências</a></h6>
+		
+		<h6 *ngIf='info.obs != "vazio"' style="color:rgb(247, 244, 83);text-align:center">	Referência:	<a id="info">{{info.obs}}</a></h6>
+		
+		</div>
+		
+		
+		<div id="center2">
+			<div id="linha2" ></div>
+		</div>
+		
+		<br>
+		
+		<div *ngIf='info.valor != 0' style="color:white;font-size:16px" id="center2">
+									
+										
+												{{info.tempo}} &nbsp;<ion-icon color="secondary" name="timer" item-start></ion-icon>
+												&nbsp;&nbsp;&nbsp;
+												{{info.dist}} &nbsp;<ion-icon color="danger" name="resize" item-start></ion-icon>
+												&nbsp;&nbsp;&nbsp;
+												R${{info.preco}} &nbsp;<ion-icon  color="secondary" name="cash" item-start></ion-icon> 
+										
+									
+		</div>
+		
+		
+		
+		
+		<h5 style="text-align: center; color: rgb(233, 243, 86)">
+				
+			Pagamento via {{info.val}}
+				
+		</h5>
+			
+		</div>
+		
+		</ion-list>
+		
+		</div>
+
+
+
+
+	
+	<ion-card *ngIf='userPass == 352 && not == false ' id="infot">
+
+     <ion-item > 
+	  
+    <ion-avatar id="avatar" item-start>
+      <img style="height: 100px; width: 100px" src={{passageiro.image}} >
+    </ion-avatar>
+	 
+  </ion-item>
+	
+	<ion-item id="info"> 
+		<h2>{{passageiro.firstName}} {{passageiro.lastName}} </h2>
+		<p>{{info.time}}</p>
+	</ion-item>
+		
+  <ion-card-content>
+  De:   {{info.myaddr}} <br>
+  Para:  {{info.destino}} <br>
+
+	<ion-row>
+    			<ion-col>
+					<ion-icon color="secondary" name="timer" item-start></ion-icon> {{info.tempo}}
+    			</ion-col>
+    			<ion-col>
+				    <ion-icon color="danger" name="resize" item-start></ion-icon> {{info.dist}}
+    			</ion-col>
+				<ion-col>
+					<ion-icon color="secondary" name="cash" item-start></ion-icon> R${{info.preco}}
+    			</ion-col>
+	</ion-row>
+		
+		<p style="text-align: center; color: cornflowerblue">
+			
+			Pagamento via {{info.val}}
+				
+		</p>
+	  
+  </ion-card-content>
+		
+	<ion-row padding>
+
+		<button color="secondary" ion-button block large (click)="aceito()">ACEITAR</button>
+		
+		<br>
+		
+		<button color="danger" ion-button block large (click)="rejeitar()">REJEITAR</button>
+		
+    </ion-row>    
+		
+</ion-card>
+	
+<!-- /////////////////////////////FIM-SOLICITADO////////////////////////////// -->	
+	
+<div id="center2">
+
+	<div *ngIf='display == false' id="back">
+		
+			<div *ngIf='corrida != true'>
+					<img src="assets/images/iniciar.png" id="play" (click)="golAlert()" />
+			</div>
+			<div *ngIf='corrida == true'>
+					<img src="assets/images/finalizar.png" (click)="endlAlert()" id="play" />
+			</div>
+			
+			&nbsp;	&nbsp; 	&nbsp;	&nbsp;
+
+	<div >
+			<img src="assets/images/seta-cima.png" id="play" (click)="disp()" />
+	</div>
+
+	&nbsp;	&nbsp;	&nbsp;	&nbsp;
+
+	<div >
+				<img src="assets/images/cancelar.png" id="play" (click)="cancelAlert()" />
+	</div>
+		
+	</div>
+	</div>
+	
+<!-- ////////////////////////////INICIO-ACEITO/////////////////////////////// -->	
+	
+
+<div id="chamar" *ngIf='userPass != "vazio" && ocupado == true && display == true'>
+
+	<ion-list no-lines>
+
+
+<ion-row id="center2">
+
+	<div *ngIf='corrida != true'>
+		<img src="assets/images/iniciar.png" id="play" (click)="golAlert()" />
+	</div>
+	
+	<div *ngIf='corrida == true'>
+			<img src="assets/images/finalizar.png" (click)="endlAlert()" id="play" />
+	</div>
+
+	&nbsp;	&nbsp; 	&nbsp;	&nbsp;
+
+	<div >
+			<img src="assets/images/seta-baixo.png" id="play" (click)="disp()" />
+	</div>
+
+	&nbsp;	&nbsp;	&nbsp;	&nbsp;
+
+	<div >
+				<img src="assets/images/cancelar.png" id="play" (click)="cancelAlert()" />
+	</div>
+
+</ion-row>
+
+<ion-item style=" background-color: rgba(10,23,55,0)"> 
+	
+	<ion-row id="center">
+		
+		
+				
+					<div >
+
+							
+			
+									<img  id="fotos" src={{passageiro.image}}  />
+			
+							
+			
+						</div>
+		
+						&nbsp;	&nbsp;
+	
+			<div style="margin-top:25px">
+
+			<h3 id="info"> <a style="color:yellow">{{passageiro.firstName}} {{passageiro.lastName}}</a> <br>
+				{{info.time}}min<br>
+				{{velocidade}}Km/h
+
+			</h3>
+				
+			</div>
+		
+
+	</ion-row>
+	
+</ion-item>
+
+<div id="divs">
+
+		
+
+
+
+<div id="center2">
+	<div id="linha2" ></div>
+</div>
+
+
+<div  style="background-color: rgba(10,23,55,0)">
+
+<h6 style="color:rgb(247, 244, 83);text-align:center">	Destino: <a id="info">{{info.destino}}</a> </h6>
+<h6 style="color:rgb(247, 244, 83);text-align:center">	Origem: <a id="info">{{info.myaddr}}</a> </h6>
+
+<h6 *ngIf='info.obs == "vazio"' style="color:rgb(247, 244, 83);text-align:center">	Referência:	<a id="info">Sem Referências</a></h6>
+
+<h6 *ngIf='info.obs != "vazio"' style="color:rgb(247, 244, 83);text-align:center">	Referência:	<a id="info">{{info.obs}}</a></h6>
+
+</div>
+
+
+<div id="center2">
+	<div id="linha2" ></div>
+</div>
+
+<br>
+
+<div *ngIf='info.valor != 0' style="color:white;font-size:16px" id="center2">
+							
+								
+										{{info.tempo}} &nbsp;<ion-icon color="secondary" name="timer" item-start></ion-icon>
+										&nbsp;&nbsp;&nbsp;
+										{{info.dist}} &nbsp;<ion-icon color="danger" name="resize" item-start></ion-icon>
+										&nbsp;&nbsp;&nbsp;
+										R${{info.preco}} &nbsp;<ion-icon  color="secondary" name="cash" item-start></ion-icon> 
+								
+							
+</div>
+
+
+
+
+<h5 style="text-align: center; color: rgb(233, 243, 86)">
+		
+	Pagamento via {{info.val}}
+		
+</h5>
+	
+</div>
+
+</ion-list>
+
+</div>
+
+
+<!-- ///////////////////////////////FIM-ACEITO//////////////////////////// -->
+	
 </ion-content>
+ 
