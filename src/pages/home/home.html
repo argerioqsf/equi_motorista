@@ -13,20 +13,20 @@
 		</div>
 
        <div id="map"></div>
-         <ion-fab *ngIf='recebido == false' bottom right>
+         <ion-fab *ngIf='ocupado == false' bottom right>
             <button ion-fab [color]="colorloc" (click)="mloc()"><img   src="assets/images/loc.png" /></button>
          </ion-fab>
 	
 	<!-- ///////////////////////////INICIO-SOLICITADO//////////////////////////////// -->
 
-	<div id="chamar" *ngIf='userPass != "vazio" && not == false && disTime == true  && cronos >= 0'>
+	<div id="chamar" *ngIf='userPass != "vazio" && ocupado == false && disTime == true  && cronos >= 0'>
 
 			<ion-list no-lines>
 		
 		
 		<ion-row id="center2">
 		
-			<div *ngIf='corrida != true && not == false'>
+			<div *ngIf='corrida != true && ocupado == false'>
 				<img src="assets/images/aceitar.png" id="play2" (click)="aceito()" />
 			</div>
 
@@ -34,8 +34,6 @@
 
 			<div id="time" *ngIf='corrida != true'>
 					<div id="anima"></div>
-					<h3 *ngIf='cronos >= 39' style="margin-top:15px;color:green;text-align:center" >{{cronos}} seg</h3>
-					<h3 *ngIf='cronos < 39 && cronos >= 0' style="margin-top:15px;color:red;text-align:center" >{{cronos}} seg</h3>
 			</div>
 			
 		
@@ -143,7 +141,7 @@
 
 
 	
-	<ion-card *ngIf='userPass == 352 && not == false ' id="infot">
+	<ion-card *ngIf='userPass == 352 && ocupado == false ' id="infot">
 
      <ion-item > 
 	  

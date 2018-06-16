@@ -31,6 +31,7 @@ import { AudioProvider } from '../providers/audio/audio';
 import { ProfileProvider } from '../providers/profile/profile';
 import { DadosProvider } from '../providers/dados/dados';
 import { BeginProvider } from '../providers/begin/begin';
+import { PagamentoProvider } from '../providers/pagamento/pagamento';
 
 
 @NgModule({
@@ -76,7 +77,8 @@ import { BeginProvider } from '../providers/begin/begin';
     AudioProvider,
     ProfileProvider,
     DadosProvider,
-    BeginProvider
+    BeginProvider,
+    PagamentoProvider
   ]
 })
 export class AppModule {}
