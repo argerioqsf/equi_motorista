@@ -81,6 +81,7 @@ export class MyApp {
 				this.user = user.uid;
 				this.userProfile = firebase.database().ref(`/DriverProfile/${user.uid}`);
 				this.getUserProfile().on("value", userProfileSnapshot => {
+				if(userProfileSnapshot.val()){
 				if(userProfileSnapshot.val().status != "off"){
 					if(userProfileSnapshot.val().status.status == "aceito"){
 					this.setBackground( "Você aceitou uma corrida","Va até o passageiro.");
@@ -90,17 +91,22 @@ export class MyApp {
 					}
 					if(userProfileSnapshot.val().status.status == "stop"){
 						this.setBackground("Você está ativo","Será notificado quando houver solicitações de viagens novas.",);
-					}
-        }
-        this.authProvider.atualizar_versao(this.user);
+					}}
+        		
+        		this.authProvider.atualizar_versao(this.user);
 				this.name = userProfileSnapshot.val().firstName + " " + userProfileSnapshot.val().lastName;
 				this.userProfile2 = userProfileSnapshot.val();
 				this.imageuid = userProfileSnapshot.val().imageuid;
 				this.image = userProfileSnapshot.val().image;	
 				this.imageCar = userProfileSnapshot.val().carro.imagecar;
-				});
 				this.rootPage = HomePage;
-				//unsubscribe();
+				unsubscribe();
+				}else{
+					this.rootPage = LoginPage;
+				}
+				});
+				
+				
 					}
 	});
 

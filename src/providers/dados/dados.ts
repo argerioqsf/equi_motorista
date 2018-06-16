@@ -31,6 +31,10 @@ this.latlonr = firebase.database().ref(`/latlon/${user.uid}`);
 }
 });
   }
+
+  	getDriverProfile(){
+    	return firebase.database().ref(`DriverProfile/`);
+  	}
 	
 	pago(uid): Promise<any>{
 		console.log("pago");

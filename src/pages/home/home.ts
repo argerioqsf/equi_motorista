@@ -239,9 +239,9 @@ openMenu() {
 				this.velocidade = this.velocidade * 3.6;
 				this.velocidade = parseFloat(resp.coords.speed.toFixed(2));
 			}
-			console.log('localização atual', this.lat,this.lon);
+			//console.log('localização atual', this.lat,this.lon);
 			//alert(this.lat,this.lon);
-			console.log('accuracy atual', this.accuracy);
+			//console.log('accuracy atual', this.accuracy);
 			this.mloc();
 		  }).catch((error) => {
 		  	console.log('Error getting location', error);
@@ -257,19 +257,19 @@ openMenu() {
 					this.velocidade = this.velocidade * 3.6;
 				  this.velocidade = parseFloat(data.coords.speed.toFixed(2));
 				}
-				 console.log("velocidade soma, ",this.velo);
+				 //console.log("velocidade soma, ",this.velo);
 			   this.velo = data.coords.speed;
 				if(this.authProvider.getstatus()  == true){
-          console.log("salvando lat lon",this.lat,this.lon);
+          //console.log("salvando lat lon",this.lat,this.lon);
           this.dadosprovider.latlon(this.lat,this.lon).then(() =>{});
 				}
 			  let latLng = new google.maps.LatLng(this.lat,this.lon);
 		    if(this.inicial == 1){
 		      this.markers.setPosition(latLng);
 			  }
-        console.log('localização atual', this.lat,this.lon);
+        //console.log('localização atual', this.lat,this.lon);
         //alert(this.lat,this.lon);
-        console.log('accuracy atual', this.accuracy);
+        //console.log('accuracy atual', this.accuracy);
         });
 
 		/////////////////geolocalizacao////////////////

@@ -6,7 +6,8 @@ IonicPage,
 Loading,
 LoadingController,
 NavController,
-NavParams
+NavParams,
+ToastController
 } from 'ionic-angular';
 import { BackgroundMode } from '@ionic-native/background-mode';
 import { Platform, ViewController } from 'ionic-angular';
@@ -19,6 +20,7 @@ import { ResetPasswordPage } from '../reset-password/reset-password';
 import { AndroidPermissions } from '@ionic-native/android-permissions';
 import { AngularFireDatabase } from 'angularfire2/database';
 import { Observable } from 'rxjs/Observable';
+import { DadosProvider } from '../../providers/dados/dados';
 
 @IonicPage()
 @Component({
@@ -42,7 +44,9 @@ export class LoginPage {
 			  public afDB: AngularFireDatabase,
 			  public viewCtrl: ViewController,
 			  public platform: Platform,
-			  private backgroundMode: BackgroundMode) {
+				private backgroundMode: BackgroundMode,
+				private dadosprovider: DadosProvider,
+			  private toastCtrl: ToastController) {
 
 				this.platform.ready().then(() => {
 					this.platform.registerBackButtonAction(() => {
@@ -87,30 +91,24 @@ this.androidPermissions.requestPermissions([this.androidPermissions.PERMISSION.A
 			
 			const email = this.loginForm.value.email;
 			const password = this.loginForm.value.password;
-			this.authProvider.loginUser(email, password).then(
-				authData => {
+			this.authProvider.loginUser(email, password).then(authData => {
 
 					console.log("loginUser.user ,", authData.user.uid, ", key ",authData.key);
 
-          this.user = this.authProvider.confirmDriver();
-          
-          console.log("	this.user ,", 	this.user);
-
-					this.user.subscribe( result => {
-
-            console.log("funfou ,", result);
+						this.dadosprovider.getDriverProfile().once("value", userProfileSnapshot=>{
+						let result = userProfileSnapshot.val();
+						console.log("funfou ,", result);
             if(result[authData.user.uid]){
-						
 							console.log("loginUser é driver");
-
 							this.loading.dismiss().then(() => {
-
+								this.authProvider.setposition(result[authData.user.uid].DataHora);
 								this.navCtrl.setRoot(HomePage);
-
 							});
-
 						}else{
               this.loading.dismiss().then(() => {
+								this.authProvider.logoutUser().then(() => {
+									this.navCtrl.setRoot(LoginPage);
+								});
                 const alert: Alert = this.alertCtrl.create({
                   title: 'Entre com uma conta de Motorista',
                   message: "Algumas das suas informações não estão corretas. Por favor, tente novamente.",
@@ -119,7 +117,24 @@ this.androidPermissions.requestPermissions([this.androidPermissions.PERMISSION.A
                 alert.present();
               });
             }
-          });
+					},error=>{
+						this.loading.dismiss().then(() => {
+							let toast = this.toastCtrl.create({
+								message:"usuario: passageiro",
+								duration: 4000
+							});
+							toast.present();
+							this.authProvider.logoutUser().then(() => {
+								this.navCtrl.setRoot(LoginPage);
+							});
+							const alert: Alert = this.alertCtrl.create({
+								title: 'Erro na autenticação.',
+								message: "Ocorreu um erro na autenticação. Por favor, tente novamente.",
+								buttons: [{ text: 'Ok', role: 'cancel' }]
+							});
+							alert.present();
+						});
+					});
 				},
 				error => {
 					this.loading.dismiss().then(() => {

@@ -54,6 +54,9 @@ export class BeginProvider {
             that.authProvider.setposition(usuario.DataHora);
             resolve({status:usuario.status,viagens:usuario.viagens});
           }else  if(usuario.status.status == "go"){
+                    that.authProvider.setposition(usuario.DataHora);
+                    that.authProvider.setstatus(true);
+                    that.authProvider.rejeitadosFim(user);
                     resolve({status:usuario.status.status,viagens:usuario.viagens});
                  }else if(usuario.status.status == "stop"){
                           that.authProvider.setposition(usuario.DataHora);
@@ -61,8 +64,11 @@ export class BeginProvider {
                           that.authProvider.rejeitadosFim(user);
                           resolve({status:usuario.status.status,viagens:usuario.viagens});
                        }else if(usuario.status.status == "aceito"){
+                          that.authProvider.setposition(usuario.DataHora);
+                          that.authProvider.setstatus(true);
+                          that.authProvider.rejeitadosFim(user);
                           resolve({status:usuario.status.status,viagens:usuario.viagens});
-                                }else{
+                        }else{
                                   console.log("Erro");
                                   resolve("Erro");
                                 }

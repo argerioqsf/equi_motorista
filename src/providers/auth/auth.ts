@@ -17,11 +17,6 @@ name;
 aceito = false;
 constructor(private afDB:AngularFireDatabase) {}
 
-
-  confirmDriver(){
-    return this.afDB.object(`/DriverProfile`).valueChanges();
-  }
-
   atualizar_versao(user){
     firebase.database().ref(`/DriverProfile/${user}/ver`).set(this.ver);
   }
@@ -114,12 +109,6 @@ constructor(private afDB:AngularFireDatabase) {}
 		return firebase.database().ref(`/DriverProfile/${user}`).update({status:"off",
 																   				  viagens:"vazio"});
 	}
-	Off(): Promise<any>{
-		return firebase.database().ref(`/DriverProfile/${this.position}`).remove();
-	}
-	seCont(): Promise<any>{
-		return firebase.database().ref(`/DriverProfile/cont`).set(this.position);
-	}
 	contOff(cont): Promise<any>{
 		return firebase.database().ref(`/DriverProfile/cont`).set(cont);
 	}
@@ -198,6 +187,7 @@ constructor(private afDB:AngularFireDatabase) {}
 	}
 	
 	imageUp(image): Promise<any> {
+		console.log("iamge: ", image)
       return firebase.database().ref(`/DriverProfile/${image.user}`).update({image:image.image,
 		      														       imageuid:image.imageuid});
 	}
@@ -219,7 +209,7 @@ constructor(private afDB:AngularFireDatabase) {}
     
   loginUser(email: string, password: string): Promise<any> {
     
-return firebase.auth().signInWithEmailAndPassword(email, password);
+		return firebase.auth().signInWithEmailAndPassword(email, password);
 }
   
  signupUser(singup): Promise<any> {

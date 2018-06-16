@@ -22,6 +22,7 @@ import { NativeAudio } from '@ionic-native/native-audio';
 import { Geolocation } from '@ionic-native/geolocation';
 import { Insomnia } from '@ionic-native/insomnia';
 import { Vibration } from '@ionic-native/vibration';
+import { Camera } from '@ionic-native/camera';
 import { AngularFireModule } from 'angularfire2';
 import { AngularFireDatabaseModule, AngularFireDatabase } from 'angularfire2/database';
 import { AngularFireAuthModule } from 'angularfire2/auth';
@@ -78,7 +79,8 @@ import { PagamentoProvider } from '../providers/pagamento/pagamento';
     ProfileProvider,
     DadosProvider,
     BeginProvider,
-    PagamentoProvider
+    PagamentoProvider,
+    Camera
   ]
 })
 export class AppModule {}
