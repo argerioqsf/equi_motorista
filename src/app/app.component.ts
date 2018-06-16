@@ -121,7 +121,7 @@ export class MyApp {
   }
     //recupera as informações do usuario do firebase
     getUserProfile(): firebase.database.Reference {
-        console.log('profile 2 ',this.userProfile);
+        //console.log('profile 2 ',this.userProfile);
 		return this.userProfile;
 	  }
   	initializeApp() {
@@ -176,14 +176,14 @@ export class MyApp {
 		if(this.ativo == true ){
 			
 		    this.status = "Ficar offline";
-			console.log("ativo ",this.ativo);
+			//console.log("ativo ",this.ativo);
 			this.cor = "secondary";
 			
 			firebase.database().ref(`/DriverProfile/${this.user}/ver`).set(this.authProvider.getVer());
 			
 			let dataNow = this.DataAtual();
 			
-			console.log(dataNow);
+			//console.log(dataNow);
 				
 			this.authProvider.driveron(dataNow.dataNow,this.user,dataNow.horas,dataNow.minutos,dataNow.ano,dataNow.mes,dataNow.dia).then(() =>{
 			this.dataHoje();
@@ -212,7 +212,7 @@ export class MyApp {
 		if(this.ativo == false  ){
 			
 			this.status = "Ficar online";
-			console.log("ativo ",this.ativo);
+			//console.log("ativo ",this.ativo);
 			this.cor = "danger";
 			this.authProvider.setstatus(false);
 			
@@ -262,7 +262,7 @@ export class MyApp {
             				  this.authProvider.logoutUser().then(() => {
 							          this.nav.setRoot(LoginPage);
 							        });
-							        console.log("sair");
+							        //console.log("sair");
           				}
         			},
         			{
@@ -292,7 +292,7 @@ export class MyApp {
         			{
           				text: 'não',
           				handler: () => {
-            				console.log('Agree clicked');
+            				//console.log('Agree clicked');
           				}
         			}
       					  ]
@@ -313,7 +313,7 @@ export class MyApp {
         			{
           				text: 'não',
           				handler: () => {
-            				console.log('Agree clicked');
+            				//console.log('Agree clicked');
           				}
         			}
       					  ]
@@ -328,7 +328,7 @@ export class MyApp {
         			{
           				text: 'ok',
           				handler: () => {
-							console.log("ok");
+							//console.log("ok");
           				}
         			}
 				]
@@ -346,11 +346,11 @@ export class MyApp {
 
 	let difsec = atu - this.net;
 
-	//console.log("atu: ",atu);
+	////console.log("atu: ",atu);
 
-	//console.log("net: ",this.net);
+	////console.log("net: ",this.net);
 
-	//console.log("diferença: ",difsec);
+	////console.log("diferença: ",difsec);
    
 	if((difsec >= 5 || (difsec > -54 && difsec < 0)) && this.off == false){
   
@@ -388,7 +388,7 @@ export class MyApp {
 				
           
 			if(that.authProvider.getstatus() == true){
-        console.log("dataHoje");
+        //console.log("dataHoje");
 				if(that.authProvider.getUserp() == "vazio"){
 
 					that.audio.stop('tabSwitch');
@@ -417,7 +417,7 @@ export class MyApp {
 			that.dia = new Date().getDate();
                 
 		    that.dataNow = hor + ":" + min;
-        console.log("Hora atualizada, ", that.dataNow);        
+        //console.log("Hora atualizada, ", that.dataNow);        
 		    that.authProvider.setStatus(that.horas,that.minutos,that.ano,that.mes,that.dia,that.user).then(() =>{
 				
 			}).catch(error =>{
@@ -435,7 +435,7 @@ export class MyApp {
         
 		    setTimeout (function () {
                 
-				console.log("desconect on ");
+				//console.log("desconect on ");
          
 			if(that.ativo == false){
 				
@@ -445,7 +445,7 @@ export class MyApp {
                    
                     that.status = "Ficar offline";
                    
-                    console.log("ativo ",that.ativo);
+                    //console.log("ativo ",that.ativo);
                    
                     that.cor = "secondary";
                    

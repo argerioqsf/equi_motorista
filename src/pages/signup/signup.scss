@@ -1,3 +1,88 @@
 page-signup {
+    
+    form {
+margin-bottom: 32px;
+button {
+margin-top: 20px;
+}
+}
+p {
+font-size: 0.8em;
+color: #d2d2d2;
+}
+ion-label {
+margin-left: 5px;
+}
+ion-input {
+padding: 5px;
+}
+.invalid {
+border-bottom: 1px solid #ff6153;
+}
+.error-message {
+min-height: 2.2rem;
+p {
+font-size: 60%;
+}
+ion-label {
+margin: 2px 0;
+} 
+item-inner {
+border-bottom: 0 !important;
+}
+}
+	
+#fotos{
+
+    height: 100px;
+    width: 100px;
+    border: 1px;
+    border-radius: 10px;
+    display: inline-block;
+    margin-left: auto;
+	margin-right: auto;
+	box-shadow: 0 2px 13px rgba(0, 0, 0, 0.7);
+
+}
+
+#fotos2{
+ 
+    height: 180px;
+    width: 180px;
+    display: inline-block;
+    margin-left: auto;
+	margin-right: auto;
+}
+	
+#center{
+    padding: 10px;
+	display: flex;
+	justify-content: center;
+    width: 100%;
+    height: auto;
+    margin-top: 5px;
+    background-color: rgba(255, 255, 255, 0);
+    
+		
+}
+
+#center2{
+    padding: 10px;
+	display: flex;
+	justify-content: center;
+    width: 100%;
+    height: auto;
+    background-color: white;
+    
+		
+}
+    
+.fundo{
+
+	background-image: url("../assets/images/fundo7.png") no-repeat center center fixed;
+    background-size: 100% 100%;
+
+}
+
 
 }

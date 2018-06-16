@@ -21,7 +21,7 @@ declare var google;
 })
 export class HomePage {
 
-disTime = false;
+disTime:any = false;
 cronom = 0;
 cronoh = 0;	
 cronomt = "0";
@@ -93,7 +93,7 @@ cronost = "0";
               private begin: BeginProvider,
               private pagamento: PagamentoProvider) {
       
-     console.log("................construtor......................");
+     //console.log("................construtor......................");
      
 
     ///////////iNICIO CONSTRUTOR///////////////////////
@@ -118,7 +118,7 @@ cronost = "0";
       this.bandeira = this.afDB.object(`/bandeira`).valueChanges();
 
       this.bandeira.subscribe( result => { 
-        console.log("bandeira ", result.modo);
+        //console.log("bandeira ", result.modo);
         this.modo = result.modo;
       });
       
@@ -128,7 +128,7 @@ cronost = "0";
 
   beginer(){
     this.begin.begin().then((resp:any) =>{
-      console.log("resp begin,  ", resp);
+      //console.log("resp begin,  ", resp);
       if(resp == "Erro"){
         let alert1 = this.alertCtrl.create({
           title: 'Ocorreu um erro inesperado.',
@@ -146,32 +146,58 @@ cronost = "0";
           });
           alert1.present();
       }else if(resp.viagens == "vazio"){
+        console.log("viagens vazio");
         this.NewCorrida();
       }else if(resp.status == "aceito"){
-        this.userPass = resp.userPass;
-        this.info = resp.info;
-        this.ocupado = true;
-        this.directionsDisplay.setMap(this.map);
-        this.calculateAndDisplayRoute(resp.latlon,resp.way);  
-        this.NewCorrida();
-        this.getuser(this.info);
-        this.getUsuario();
+        this.begin.StatusViagem(resp.userPass,resp.status).then((statusV:any)=>{
+          if(statusV.status == resp.status){
+            this.userPass = resp.userPass;
+            this.info = resp.info;
+            this.ocupado = true;
+            this.directionsDisplay.setMap(this.map);
+            this.calculateAndDisplayRoute(resp.latlon,resp.way);  
+            this.NewCorrida();
+            this.getuser(this.info);
+            this.getUsuario();
+          }else{
+            console.log("viagem não está disponivel ");
+            this.dadosprovider.getuser().then(user=>{
+              this.authProvider.stop(user);
+              this.authProvider.rejeitar(user);
+            });
+          }
+        });
       }else if(resp.status == "go"){
-        this.toast("Corrida já iniciada. ");
-        this.userPass = resp.userPass;
-        this.info = resp.info;
-        this.ocupado = true;
-        this.corrida = true; //so é true se a corrida já estiver iniciada
-        this.directionsDisplay.setMap(this.map);
-        this.calculateAndDisplayRoute(resp.latlon,resp.way);
-        this.NewCorrida();
-        this.getuser(this.info);
-        this.getUsuario();
+        this.begin.StatusViagem(resp.userPass,resp.status).then((statusV:any)=>{
+          if(statusV.status == resp.status){
+            this.toast("Corrida já iniciada. ");
+            this.userPass = resp.userPass;
+            this.info = resp.info;
+            this.ocupado = true;
+            this.corrida = true; //so é true se a corrida já estiver iniciada
+            this.directionsDisplay.setMap(this.map);
+            this.calculateAndDisplayRoute(resp.latlon,resp.way);
+            this.NewCorrida();
+            this.getuser(this.info);
+            this.getUsuario();
+          }else{
+            console.log("viagem não está disponivel ");
+            this.dadosprovider.getuser().then(user=>{
+              this.authProvider.stop(user);
+              this.authProvider.rejeitar(user);
+            });
+          }
+        });
       }else if(resp.status == "stop"){
-        this.disTime = true; //se for true o dissplay de solicitação esta visivel
+        //this.disTime = true; //se for true o dissplay de solicitação esta visivel
         this.NewCorrida();
         this.cronometro2();
       }else{
+        console.log("resp.status, ",resp.status);
+        this.dadosprovider.getuser().then(user=>{
+          this.authProvider.stop(user);
+          this.authProvider.rejeitar(user);
+        });
         this.NewCorrida();
       }
       
@@ -203,10 +229,12 @@ openMenu() {
       this.begin.statusCorrida().subscribe((info:any)=>{
         if(this.ocupado == false && info.info == "new" && this.userPass == "vazio"){
           this.userPass = info.userPass;
-          this.toast("Nova corrida");
-          console.log("userPass ", this.userPass);
+          //this.toast("Nova corrida");
+          //console.log("userPass ", this.userPass);
           this.authProvider.setUserp(this.userPass);
           this.getInfo(info.userPass);
+        }else{
+          console.log("NewCorrida: Erro ");
         }
       });
     }
@@ -222,9 +250,9 @@ openMenu() {
     this.dadosprovider.getuser().then((user) =>{
     this.user = user;
     });
-		console.log("user ", this.user);
+		//console.log("user ", this.user);
 		this.refviagens = this.afDB.list('/viagens').valueChanges();
-		console.log("home.position ",this.Position);
+		//console.log("home.position ",this.Position);
 		//função que dis oq fazer depois q a notificação e clicada
     let noti_update = this.localNotifications.on("click").subscribe(up =>{});
 		/////////////////geolocalizacao////////////////
@@ -239,12 +267,12 @@ openMenu() {
 				this.velocidade = this.velocidade * 3.6;
 				this.velocidade = parseFloat(resp.coords.speed.toFixed(2));
 			}
-			//console.log('localização atual', this.lat,this.lon);
+			////console.log('localização atual', this.lat,this.lon);
 			//alert(this.lat,this.lon);
-			//console.log('accuracy atual', this.accuracy);
+			////console.log('accuracy atual', this.accuracy);
 			this.mloc();
 		  }).catch((error) => {
-		  	console.log('Error getting location', error);
+		  	//console.log('Error getting location', error);
 		  });
 			let watch = this.geolocation.watchPosition({ enableHighAccuracy: true });
 			watch.subscribe((data) => {
@@ -257,19 +285,19 @@ openMenu() {
 					this.velocidade = this.velocidade * 3.6;
 				  this.velocidade = parseFloat(data.coords.speed.toFixed(2));
 				}
-				 //console.log("velocidade soma, ",this.velo);
+				 ////console.log("velocidade soma, ",this.velo);
 			   this.velo = data.coords.speed;
 				if(this.authProvider.getstatus()  == true){
-          //console.log("salvando lat lon",this.lat,this.lon);
+          ////console.log("salvando lat lon",this.lat,this.lon);
           this.dadosprovider.latlon(this.lat,this.lon).then(() =>{});
 				}
 			  let latLng = new google.maps.LatLng(this.lat,this.lon);
 		    if(this.inicial == 1){
 		      this.markers.setPosition(latLng);
 			  }
-        //console.log('localização atual', this.lat,this.lon);
+        ////console.log('localização atual', this.lat,this.lon);
         //alert(this.lat,this.lon);
-        //console.log('accuracy atual', this.accuracy);
+        ////console.log('accuracy atual', this.accuracy);
         });
 
 		/////////////////geolocalizacao////////////////
@@ -314,10 +342,11 @@ openMenu() {
         const that = this;
         setTimeout (function () {
           if(that.userPass != "vazio" && that.ocupado == false){
-            that.disTime = false;//se for true o dissplay de solicitação esta visivel
+            that.disTime = "stop";//se for true o dissplay de solicitação esta visivel
             that.audio.stop('tabSwitch');
             setTimeout (function () {
               if( that.ocupado == false){
+                that.disTime = false;//se for true o dissplay de solicitação esta visivel
                 that.rejeitar();
               }
             },1000);
@@ -328,8 +357,9 @@ openMenu() {
     ///////////iNICIO DO GETINFO///////////////////////
     
       getInfo(userPass){
+        console.log("getInfo");
         this.begin.getInfo(userPass).then((resp:any) =>{
-            if(this.ocupado == false){
+            if(this.disTime == false){
               if(resp.status != "Erro"){
               this.backgroundMode.unlock();
               console.log("viagem nova ");
@@ -338,13 +368,22 @@ openMenu() {
               this.getUsuario();
               this.cronometro2();
               this.disTime = true;  //se for true o dissplay de solicitação esta visivel
+            }else{
+              console.log("getInfo: Erro");
+              this.userPass = "vazio";
+              this.authProvider.setUserp("vazio");
             }
+            }else{
+              console.log("getInfo: Erro");
+              this.userPass = "vazio";
+              this.authProvider.setUserp("vazio");
             }
         });
 		
       }//FIM DO getInfo
   
       getuser(user){
+        console.log("user, ",user);
       this.begin.getuser(user).subscribe((resp:any)=>{
         console.log("status, ",resp.status);
         if(this.ocupado == true && resp.status == "off"){
@@ -354,15 +393,15 @@ openMenu() {
           this.authProvider.rejeitar(this.user).then(() =>{
           this.display = true;//controla o display dos botões no html
           });
-          console.log("cancelou");
+          //console.log("cancelou");
           this.toast("viagem cancelada pelo passageiro");
           this.directionsDisplay.setMap(null);
-          console.log("cancelou2");
+          //console.log("cancelou2");
           let myloc = {lat: this.lat,lng: this.lon};
           this.map.setCenter(myloc);
-          console.log("cancelou3");
+          //console.log("cancelou3");
           //this.livre();
-          console.log("cancelou4");
+          //console.log("cancelou4");
           this.info = {};
           this.userPass = "vazio";
         }
@@ -370,9 +409,9 @@ openMenu() {
       }
     
       getUsuario(){
-      console.log("info.user ",this.info.user);
+      //console.log("info.user ",this.info.user);
       this.dadosprovider.getUsuario(this.info.user).on("value", userProfileSnapshot => {
-        console.log("userprofile ",userProfileSnapshot.val());
+        //console.log("userprofile ",userProfileSnapshot.val());
         this.passageiro = userProfileSnapshot.val();
       });
 	    }
@@ -391,22 +430,22 @@ openMenu() {
       if(this.authProvider.getUserp() != "vazio"){
 			this.insomnia.keepAwake()
 			.then(
-				() => console.log('success'),
+        () => console.log('success'),
 				() => console.log('error')
 			);
       this.vibration.vibrate(0);
-		  console.log("this.ocupado2 ",this.ocupado);
+		  //console.log("this.ocupado2 ",this.ocupado);
 		  if(this.ocupado == false){
             this.dadosprovider.up(this.authProvider.getUserp()).then(newEvent => {
             this.authProvider.setAceito(true);//variavel compartilhada
             this.localNotifications.clear(1);
-            console.log('aceito');
+            //console.log('aceito');
             this.toast("você aceitou a corrida va até o passageiro");
             this.getuser(this.info);
             this.ocupado = true;//
             let latlon = new google.maps.LatLng(this.info.latd,this.info.lond);
             let way = new google.maps.LatLng(this.info.latp,this.info.lonp);
-            console.log('way ' + way + 'latlon ' + latlon);
+            //console.log('way ' + way + 'latlon ' + latlon);
             this.directionsDisplay.setMap(this.map);
             this.calculateAndDisplayRoute(latlon,way);
             let dt = this.authProvider.getData();
@@ -424,7 +463,7 @@ openMenu() {
                 () => console.log('success'),
                 () => console.log('error')
             );
-            console.log('stop audio');
+            //console.log('stop audio');
             this.audio.stop('tabSwitch');
             this.vibration.vibrate(0);
             this.authProvider.rejeitados(this.userPass,this.user).then(() =>{
@@ -445,7 +484,7 @@ openMenu() {
                       this.ocupado = false;
                       this.passageiro= {};//zera os informações do passageiro
                       this.localNotifications.clear(1);
-                      console.log('rejeito');
+                      //console.log('rejeito');
                       const that = this;
                       setTimeout (function () {
                         if(that.authProvider.getPosition() != "off"){
@@ -494,7 +533,7 @@ openMenu() {
               this.authProvider.setUserp("vazio");//variavel compartilhada     
               this.authProvider.setAceito(false);//variavel compartilhada
           });
-          console.log("cancelou");
+          //console.log("cancelou");
           this.toast("Você cancelou a viagem");
           this.directionsDisplay.setMap(null);
           let myloc = {lat: this.lat,lng: this.lon};
@@ -547,8 +586,8 @@ openMenu() {
 		if(this.authProvider.getstatus() == true){//variavel compartilhada
 			this.passageiro= {};
 			this.insomnia.allowSleepAgain().then(
-						() => console.log('success'),
-						() => console.log('error'));
+						() =>   console.log('success'),
+						() =>   console.log('error'));
 			this.dadosprovider.stopUser(this.info.user);
 			this.authProvider.Ocupado(false);//variavel compartilhada
 			this.dadosprovider.stopviagens(this.userPass);
@@ -557,7 +596,7 @@ openMenu() {
 				let id2 = this.info.id;
 				this.dadosprovider.setHisto(this.info).then((histo:any)=>{
             this.pagamento.pagamento(this.info).then((pag:any)=>{
-                console.log("this.info",this.info);
+                //console.log("this.info",this.info);
                 this.corrida = false;// this.corrida so é true se a corrida já estiver iniciada
                 this.authProvider.setAceito(false);//variavel compartilhada
                 this.authProvider.stop(this.user);
@@ -565,10 +604,10 @@ openMenu() {
                   this.authProvider.setUserp("vazio");//variavel compartilhada
                   this.authProvider.setAceito(false); //variavel compartilhada       
                 });
-                console.log("finalizou");
+                //console.log("finalizou");
                 this.toast("Você finalizou a viagem");
                 this.directionsDisplay.setMap(null);
-                console.log("finalizou2");
+                //console.log("finalizou2");
                 let myloc = {lat: this.lat,lng: this.lon};
                 this.map.setCenter(myloc);
                 this.ocupado = false;
@@ -589,7 +628,7 @@ openMenu() {
 
     
   addMarker(lat: number, lng: number): void {
-        console.log('localização atual');
+        //console.log('localização atual');
         let latLng = new google.maps.LatLng(lat, lng);
         let marker = new google.maps.Marker({ map: this.map,position: latLng,});
         this.markers = marker; 
@@ -597,7 +636,7 @@ openMenu() {
   }
 	
 	disp(){
-		  console.log("display, ",this.display);
+		  //console.log("display, ",this.display);
 		    if(this.display == true){
 			      this.display = false;//controla o display dos botões no html
 			  }else{
@@ -605,7 +644,7 @@ openMenu() {
                 this.display = true;//controla o display dos botões no html
 			        }}
 		
-		  console.log("display 2, ",this.display);
+		  //console.log("display 2, ",this.display);
 	}
 
   mloc(){
@@ -634,7 +673,7 @@ openMenu() {
 	}
 	
 	calculateAndDisplayRoute(latlong,way) {
-		console.log("entrou geo");
+		//console.log("entrou geo");
 		let latLng = new google.maps.LatLng(this.lat,this.lon);
     this.directionsService.route({
       	origin: latLng,
@@ -732,7 +771,7 @@ openMenu() {
 				this.info.distancet = distancet;
 				this.info.valor = (distancev * 3)/1000;
 				this.info.distancev = distancev;
-		  		console.log(this.info.origem);
+		  		//console.log(this.info.origem);
 		  		//this.presentToast2(duration);
 		  		//this.presentToast2(distancet);
 		  		//this.presentToast2(this.info.valor);

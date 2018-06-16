@@ -78,29 +78,29 @@ export class AudioProvider {
 	
 	stop(key){
          
-		console.log("stop");
+		//console.log("stop");
 		
         let audio = this.sounds.find((sound) => {
             return sound.key === key;
         });
 		
-		console.log("key,",audio.key);
+		//console.log("key,",audio.key);
 		
         if(audio.type === 'html5'){
             
-			console.log("html5");
-			console.log("asset,",audio.asset);
+			//console.log("html5");
+			//console.log("asset,",audio.asset);
             let audioAsset = new Audio(audio.asset);
 			audioAsset.loop = false;
             //audioAsset.pause();
-			console.log("loop,",audioAsset.loop);
+			//console.log("loop,",audioAsset.loop);
  
         } else {
  
             this.nativeAudio.stop(audio.asset).then((res) => {
-                console.log(res);
+                //console.log(res);
             }, (err) => {
-                console.log(err);
+                //console.log(err);
             });
 			
  

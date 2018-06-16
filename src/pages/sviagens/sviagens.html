@@ -6,13 +6,50 @@
 -->
 <ion-header>
 
-  <ion-navbar>
-    <ion-title>sviagens</ion-title>
+  <ion-navbar color="yell">
+      <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button >
+    <ion-title >Suas viagens</ion-title>
   </ion-navbar>
 
 </ion-header>
 
 
-<ion-content padding>
+<ion-content id ="content">
+
+      <div id="card" *ngFor="let item of temp">
+
+          <ion-list >
+  
+              
+            <div id="lista">
+                <img src="https://maps.googleapis.com/maps/api/staticmap?center={{item.destino}}&zoom=15&size=600x300&maptype=roadmap
+                &markers=color:red%7Clabel:D%7C{{item.destino}}}&key=AIzaSyDzzmH2hwENiyLo7awuu5r5FkMAsqhzfy0">  
+            </div> 
+                <ion-item>
+                    <span >Para: {{item.destino}} </span>
+                </ion-item>   
+                <ion-item>
+  
+                <span item-left>{{ item.time }}min  </span>
+                <span item-right>R${{ item.preco }}</span>
+                
+                </ion-item>
+  
+                <ion-item>
+  
+                    <span *ngIf='item.status == "finalizada"' style="color:green" item-right>{{ item.status }}</span>
+                    <span *ngIf='item.status == "cancelada"' style="color:red" item-right>{{ item.status }}</span>
+                  
+                    
+                    <button *ngIf='item.pago == true' color="secondary" ion-button item-left>Pagamento efetuado</button>
+                    <button *ngIf='item.pago == false' color="danger" (click)="editar(item)" ion-button item-left>Pagamento pendente</button>
+                
+                </ion-item>
+  
+          </ion-list>
+  
+        </div>
 
 </ion-content>

@@ -1,18 +1,111 @@
-<!--
-  Generated template for the SignupPage page.
+<ion-header >
 
-  See http://ionicframework.com/docs/components/#navigation for more info on
-  Ionic pages and navigation.
--->
-<ion-header>
-
-  <ion-navbar>
-    <ion-title>signup</ion-title>
+  <ion-navbar color="yell">
+    <ion-title>Inscreva-se</ion-title>
   </ion-navbar>
 
 </ion-header>
 
 
-<ion-content padding>
+<ion-content padding class="fundo">
+	
+	<ion-list>
+		
 
+	</ion-list>
+
+	<form [formGroup]="signupForm" (submit)="signupUser()" novalidate>
+
+			<ion-item-divider style="text-align:center" color="light">informações do motorista</ion-item-divider>
+
+			<ion-item>
+
+					<div id="center" >
+							<img (click)="presentActionSheet()" id="fotos" src={{imageURL}} />
+					</div>
+	
+			</ion-item>
+
+		<ion-item>
+			<ion-label  stacked>Primeiro nome</ion-label>
+			<ion-input formControlName="first" type="text"
+					   placeholder="Seu primeiro nome"
+					   >
+			</ion-input>
+		</ion-item>
+		<ion-item>
+			<ion-label  stacked>Segundo nome</ion-label>
+			<ion-input formControlName="last" type="text"
+					   placeholder="Seu Segundo nome"
+					   >
+			</ion-input>
+		</ion-item>
+		<ion-item>
+			<ion-label  stacked>código de identificação</ion-label>
+			<ion-input formControlName="ci" type="number"
+					   placeholder="Seu código de identificação"
+					   >
+			</ion-input>
+		</ion-item>
+		<ion-item>
+			<ion-label  stacked>Telefone para contato</ion-label>
+			<ion-input formControlName="tpc" type="number"
+					   placeholder="Seu numero de telefone"
+					   >
+			</ion-input>
+		</ion-item>
+		<ion-item>
+			<ion-label stacked>Email</ion-label>
+			<ion-input formControlName="email" type="email"
+					   placeholder="Seu email"
+					   [class.invalid]="!signupForm.controls.email.valid && blur">
+			</ion-input>
+		</ion-item>
+		<ion-item class="error-message" *ngIf="!signupForm.controls.email.valid
+											   && signupForm.controls.email.dirty">
+			<p>Por favor informe um email válido</p>
+		</ion-item>
+		<ion-item>
+			<ion-label stacked>Senha</ion-label>
+			<ion-input formControlName="password" type="password"
+					   placeholder="Sua senha"
+					   [class.invalid]="!signupForm.controls.password.valid && blur">
+			</ion-input>
+		</ion-item>
+		<ion-item class="error-message"
+				  *ngIf="!signupForm.controls.password.valid &&
+						 signupForm.controls.password.dirty">
+			<p>A senha precisa conter mais de 6 caracteres.</p>
+		</ion-item>
+
+		<ion-item-divider style="text-align:center" color="light">informações do Carro</ion-item-divider>
+
+		<ion-item>
+	
+				<div id="center2"> 
+						<img (click)="presentActionSheet2()" id="fotos2" src={{imageURLCar}} />
+				</div>
+			
+		</ion-item>
+
+		<ion-item>
+				<ion-label  stacked>Placa do carro</ion-label>
+				<ion-input formControlName="placa" type="text"
+						   placeholder="placa"
+						   >
+				</ion-input>
+			</ion-item>
+			<ion-item>
+				<ion-label  stacked>modelo do carro</ion-label>
+				<ion-input formControlName="modelo" type="text"
+						   placeholder="modelo"
+						   >
+				</ion-input>
+			</ion-item>
+
+
+		<button color="yell" ion-button block type="submit" [disabled]="!signupForm.valid">
+			Criar conta
+		</button>
+	</form>
 </ion-content>

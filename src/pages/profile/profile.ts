@@ -279,7 +279,6 @@ updatecod(): void {
   }
 	
 	 public uploadPhoto(): void {
-      //alert("indo 2 ");
       let uploadTask =  this.myPhotosRef.child(this.imageuid).child('perfil.jpeg')
       .putString(this.myPhoto, 'base64', { contentType: 'image/jpeg' });
       uploadTask.on('state_changed',(savedPicture) => {
@@ -296,7 +295,7 @@ updatecod(): void {
         uploadTask.snapshot.ref.getDownloadURL().then((downloadURL)=>{
           console.log('File available at', downloadURL);
           this.image = downloadURL;
-		      this.imageUp(this.image);
+		  this.imageUp(this.image);
         });
       });
 		 

@@ -32,6 +32,22 @@ this.latlonr = firebase.database().ref(`/latlon/${user.uid}`);
 });
   }
 
+  	returnList(path){
+		  return new Promise((resolve, reject)=>{
+			let list = [];
+			firebase.database().ref(path).once("value",userProfileSnapshot=>{
+				let result = userProfileSnapshot;
+				console.log("result,",result);
+				result.forEach(element => {
+					list.push(element.val());
+				});
+				resolve(list);
+			},error=>{
+				resolve("Erro");
+			});
+		  });
+	  }
+
   	getDriverProfile(){
     	return firebase.database().ref(`DriverProfile/`);
   	}
@@ -163,7 +179,7 @@ this.latlonr = firebase.database().ref(`/latlon/${user.uid}`);
 	}
 	
     latlon(lat:any,lon:any): Promise<any>{
-		console.log("salvando lat lon2",lat,lon);
+		//console.log("salvando lat lon2",lat,lon);
         return firebase.database().ref(`/DriverProfile/${this.user}/latlon`).update({
             lat:lat,
             lgn:lon

@@ -214,7 +214,8 @@ constructor(private afDB:AngularFireDatabase) {}
   
  signupUser(singup): Promise<any> {
       return firebase.auth().createUserWithEmailAndPassword(singup.email, singup.senha).then(newUser => {
-          firebase.database().ref(`/DriverProfile/${newUser.uid}`).set({email:singup.email,
+		  console.log("newUser.user.uid, ",newUser.user.uid);
+          firebase.database().ref(`/DriverProfile/${newUser.user.uid}`).set({email:singup.email,
 																	  image:singup.image,
 																	  carro:{
 																		  modelo:singup.modelo,
@@ -227,7 +228,7 @@ constructor(private afDB:AngularFireDatabase) {}
 																	  tipo:"driver",
 																	  lastName:singup.lastname,
 																	  firstName:singup.firstname,
-                                                                      id:newUser.uid,
+                                                                      id:newUser.user.uid,
                                                                       DataHora:this.DataHora(),
                                                                       status:"off",
                                                                       viagens:"vazio",

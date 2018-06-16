@@ -41,7 +41,7 @@ export class BeginProvider {
     return new Promise((resolve,reject)=>{
     let that = this;
     setTimeout(()=>{
-    that.user = that.dadosprovider.getuser().then((user) =>{
+    that.dadosprovider.getuser().then((user) =>{
       console.log("User, ", user);
       that.dadosprovider.getDriver(user).once("value", userProfileSnapshot => {
         let result = userProfileSnapshot.val();
@@ -74,30 +74,26 @@ export class BeginProvider {
                                 }
                         
         }else  if(usuario.status.status == "aceito"){
-
-            that.insomnia.keepAwake()
-            .then(
-              () => console.log('success'),
-              () => console.log('error')
-            );
-
-            //that.toast("go: ");
-            that.authProvider.setAceito(true);
-            that.authProvider.setposition(usuario.DataHora);
-            let userPass = usuario.viagens;
-            that.authProvider.setUserp(usuario.viagens);
-            that.authProvider.setstatus(true);
-            that.localNotifications.clear(1);
           
             that.dadosprovider.getviagens(usuario.viagens).once("value", userProfileSnapshot => {
               let result2:any = userProfileSnapshot.val();
 
                 console.log("atualização");
 
-                    if(result2.user == usuario.viagens && usuario.viagens != "vazio"){
+                    if(result2.user == usuario.viagens && usuario.viagens != "vazio" && result2.usert == usuario.id){
 
                       console.log("status viagem ",result2.status);
-
+                      that.insomnia.keepAwake()
+                      .then(
+                        () => console.log('success'),
+                        () => console.log('error')
+                      );
+                      that.authProvider.setAceito(true);
+                      that.authProvider.setposition(usuario.DataHora);
+                      let userPass = usuario.viagens;
+                      that.authProvider.setUserp(usuario.viagens);
+                      that.authProvider.setstatus(true);
+                      that.localNotifications.clear(1);
                       that.authProvider.setAceito(true);
                       let info = result2;
                       let latlon = {lat:info.latd,lgn:info.lond};
@@ -109,6 +105,11 @@ export class BeginProvider {
                                userPass: userPass,
                                latlon: latlon,
                                way:way});
+                      }else{
+                        that.authProvider.setposition(usuario.DataHora);
+                        that.authProvider.rejeitadosFim(user);
+                        that.authProvider.setstatus(true);
+                        resolve({status:"Erro/indisponivel"});
                       }
                
                },error=>{
@@ -117,32 +118,27 @@ export class BeginProvider {
                });
                                 
         }else if(usuario.status.status == "go"){
-
-            that.insomnia.keepAwake()
-            .then(
-              () => console.log('success'),
-              () => console.log('error')
-            );
-
-            that.authProvider.setAceito(true);
-            that.authProvider.setposition(usuario.DataHora);
-            let userPass = usuario.viagens;
-            that.authProvider.setUserp(usuario.viagens);
-            that.authProvider.setstatus(true);
-            that.localNotifications.clear(1);
-            //that.cronometro();
+           
           
             that.dadosprovider.getviagens(usuario.viagens).once("value", userProfileSnapshot => {
               let result2:any = userProfileSnapshot.val();
-                         // that.toast("refviagens2");
-              if(that.authProvider.getstatus()  == true){
 
                 console.log("atualização");
 
-                    if(result2.user == userPass && userPass != "vazio"){
+                    if(result2.user == usuario.viagens && usuario.viagens != "vazio" && result2.usert == usuario.id){
 
                       console.log("status viagem ",result2.status.status);
-
+                      that.insomnia.keepAwake()
+                      .then(
+                        () => console.log('success'),
+                        () => console.log('error')
+                      );
+                      let userPass = usuario.viagens;
+                      that.authProvider.setAceito(true);
+                      that.authProvider.setposition(usuario.DataHora);
+                      that.authProvider.setUserp(usuario.viagens);
+                      that.authProvider.setstatus(true);
+                      that.localNotifications.clear(1);
                       that.authProvider.setAceito(true);
                       let info = result2;
                     
@@ -155,8 +151,12 @@ export class BeginProvider {
                                userPass: userPass,
                                latlon: latlon,
                                way:way});
+                      }else{
+                        that.authProvider.setposition(usuario.DataHora);
+                        that.authProvider.rejeitadosFim(user);
+                        that.authProvider.setstatus(true);
+                        resolve({status:"Erro/indisponivel"});
                       }
-               }
                },error=>{
                  console.log("Erro");
                 resolve("Erro");
@@ -164,14 +164,30 @@ export class BeginProvider {
                                 
           } else if(usuario.status.status == "stop" && that.authProvider.getUserp() == "vazio"){
             
-            that.authProvider.setposition(usuario.DataHora);
-            console.log("stop");
-            that.authProvider.setUserp(usuario.viagens);
-            that.authProvider.rejeitadosFim(user);
-            //that.toast("setuserp 1" + usuario.viagens);
-            that.authProvider.setstatus(true);
-            resolve({status:usuario.status.status,
-                      viagens:usuario.viagens,});
+                    that.dadosprovider.getviagens(usuario.viagens).once("value", userProfileSnapshot => {
+                    let result2:any = userProfileSnapshot.val();
+                                // that.toast("refviagens2");
+                      console.log("atualização");
+
+                          if(result2.user == usuario.viagens && usuario.viagens != "vazio" && result2.usert == usuario.id){
+                            that.authProvider.setposition(usuario.DataHora);
+                            console.log("stop");
+                            that.authProvider.setUserp(usuario.viagens);
+                            that.authProvider.rejeitadosFim(user);
+                            //that.toast("setuserp 1" + usuario.viagens);
+                            that.authProvider.setstatus(true);
+                            resolve({status:usuario.status.status,
+                                      viagens:usuario.viagens,});
+                            }else{
+                              that.authProvider.setposition(usuario.DataHora);
+                              that.authProvider.rejeitadosFim(user);
+                              that.authProvider.setstatus(true);
+                              resolve({status:"Erro/indisponivel"});
+                            }
+                      },error=>{
+                        console.log("Erro");
+                      resolve("Erro");
+                    });
             
           }else{
             console.log("Erro");
@@ -192,32 +208,34 @@ export class BeginProvider {
     let that = this;
     let observable = new Observable(observer => { 
   setTimeout(() => {
-      that.user = that.dadosprovider.getuser().then((user) =>{
+      that.dadosprovider.getuser().then((user) =>{
 		      that.dadosprovider.getDriver(user).on("value", userProfileSnapshot => {
 			      let result:any = userProfileSnapshot.val();
             
 			      if(that.authProvider.getstatus()  == true){
                 
-				    console.log("result driveron ",result);
+				    //console.log("result driveron ",result);
 					
 					  if(that.authProvider.getAceito() == false){
 					     
-						console.log("result[i].id ",result.id);
-						console.log("user ",that.user);
-						console.log("resulti user ",result.id);
+						//console.log("result[i].id ",result.id);
+						//console.log("user ",result.user);
+						//console.log("resulti user ",result.id);
                       
-						console.log("userPass antes ",result.viagens);
+						//console.log("userPass antes ",result.viagens);
                         
 						let userPass = "vazio";
                         
 						if(result.viagens != "vazio" && result.status != "off"){
-							
 						    if(result.status.status != "go" && result.status.status != "aceito"){
+                  console.log("statusCorrida: viagem pendente ",result);
                   observer.next({info:"new",userPass: result.viagens});
 							  }
 					  }                        
 					}
 			}
+    },erro=>{
+      observer.next({info:"Erro"});
     });
   });
 }, 500);
@@ -225,12 +243,39 @@ export class BeginProvider {
   return observable;
   }
 
+  StatusViagem(userPass,status){
+    return new Promise((resolve,reject) => {
+    this.dadosprovider.getviagens(userPass).once("value", (userProfileSnapshot:any) =>{
+      let result = userProfileSnapshot.val();
+      this.dadosprovider.getuser().then(user=>{
+      if(result.status  != "off" && result.usert == user){
+        if(result.status  == status){
+          if(this.authProvider.getstatus()  == true){
+            resolve({status:result.status});
+          }else{
+            resolve({status:"Erro"});
+          }
+        }else{
+            resolve({status:result.status});
+        }
+      }else{
+            resolve({status:"Erro"});
+      }
+      });
+    },error=>{
+      resolve({status:"Erro"});
+    });
+  
+  });          
+  }
+
   getInfo(userPass){
     return new Promise((resolve,reject) => {
     this.dadosprovider.getviagens(userPass).once("value", (userProfileSnapshot:any) =>{
       let result = userProfileSnapshot.val();
+      if(result.status  == "on"){
       if(this.authProvider.getstatus()  == true){
-        console.log("result ",result);
+        console.log("viagem nova ",result);
         //this.navCtrl.popAll();
         this.authProvider.Ocupado(true);
         this.localNotifications.schedule({
@@ -245,6 +290,14 @@ export class BeginProvider {
       }else{
         resolve({status:"Erro"});
       }
+    }else{
+        console.log("viagem não está disponivel ");
+          this.dadosprovider.getuser().then(user=>{
+          this.authProvider.stop(user);
+          this.authProvider.rejeitar(user);
+        });
+        resolve({status:"Erro"});
+    }
     },error=>{
       resolve({status:"Erro"});
     });
@@ -269,8 +322,10 @@ export class BeginProvider {
 						text: 'O usuario cancelou a viagem',
 						icon:'../assets/images/icon4.png',
 						color: 'FFFF00'
-					});
-					this.authProvider.stop(this.user);
+          });
+          this.dadosprovider.getuser().then(usert=>{
+            this.authProvider.stop(usert);
+          });
           this.authProvider.Ocupado(false);
           this.dadosprovider.stopUser(user.user);
           this.dadosprovider.stopviagens(user.user);
