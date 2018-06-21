@@ -196,8 +196,8 @@ export class MyApp {
 			this.backgroundMode.enable();
 
 			this.backgroundMode.on("activate").subscribe(()=>{
-          this.backgroundMode.disableWebViewOptimizations();
-      });
+          			this.backgroundMode.disableWebViewOptimizations();
+      		});
       
 			});
 
@@ -207,7 +207,7 @@ export class MyApp {
 				icon: 'icon4',
 				color: '32db64',
 				hidden: false});
-      }
+      	}
 		
 		if(this.ativo == false  ){
 			
@@ -277,7 +277,7 @@ export class MyApp {
 	 }
 	
 	 Alert(option) {
-		 if(this.authProvider.getNot() == false ){
+		 if(this.authProvider.getUserp() != "vazio" ){
 		    if(option == false){
 		    let alert1 = this.alertCtrl.create({
       			title: 'Deseja ficar online?',

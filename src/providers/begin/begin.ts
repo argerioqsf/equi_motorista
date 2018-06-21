@@ -39,269 +39,239 @@ export class BeginProvider {
 
   begin(){
     return new Promise((resolve,reject)=>{
-    let that = this;
-    setTimeout(()=>{
-    that.dadosprovider.getuser().then((user) =>{
-      console.log("User, ", user);
-      that.dadosprovider.getDriver(user).once("value", userProfileSnapshot => {
-        let result = userProfileSnapshot.val();
-        console.log("result " ,  result);
-        let usuario:any = result;
-
-        if(usuario.viagens == "vazio" ){
-
-          if(usuario.status == "off"){
-            that.authProvider.setposition(usuario.DataHora);
-            resolve({status:usuario.status,viagens:usuario.viagens});
-          }else  if(usuario.status.status == "go"){
-                    that.authProvider.setposition(usuario.DataHora);
-                    that.authProvider.setstatus(true);
-                    that.authProvider.rejeitadosFim(user);
-                    resolve({status:usuario.status.status,viagens:usuario.viagens});
-                 }else if(usuario.status.status == "stop"){
-                          that.authProvider.setposition(usuario.DataHora);
-                          that.authProvider.setstatus(true);
-                          that.authProvider.rejeitadosFim(user);
-                          resolve({status:usuario.status.status,viagens:usuario.viagens});
-                       }else if(usuario.status.status == "aceito"){
-                          that.authProvider.setposition(usuario.DataHora);
-                          that.authProvider.setstatus(true);
-                          that.authProvider.rejeitadosFim(user);
-                          resolve({status:usuario.status.status,viagens:usuario.viagens});
-                        }else{
-                                  console.log("Erro");
-                                  resolve("Erro");
+      this.dadosprovider.getuser().then((user) =>{
+        console.log("User, ", user);
+        this.dadosprovider.getDriver(user).once("value", userProfileSnapshot => {
+          let result = userProfileSnapshot.val();
+          console.log("result " ,  result);
+          let usuario:any = result;
+            if(usuario.viagens == "vazio" ){
+              if(usuario.status == "off"){
+                this.authProvider.setposition(usuario.DataHora);//variavel compartilhada
+                resolve({status:usuario.status,viagens:usuario.viagens});
+              }else if(usuario.status.status == "go"){
+                      this.authProvider.setposition(usuario.DataHora);//variavel compartilhada
+                      this.authProvider.setstatus(true);//variavel compartilhada
+                      this.authProvider.rejeitadosFim(user);
+                      this.authProvider.stop(user);
+                      resolve({status:usuario.status.status,viagens:usuario.viagens});
+                    }else if(usuario.status.status == "stop"){
+                            this.authProvider.setposition(usuario.DataHora);//variavel compartilhada
+                            this.authProvider.setstatus(true);//variavel compartilhada
+                            this.authProvider.rejeitadosFim(user);
+                            resolve({status:usuario.status.status,viagens:usuario.viagens});
+                          }else if(usuario.status.status == "aceito"){
+                                  this.authProvider.setposition(usuario.DataHora);//variavel compartilhada
+                                  this.authProvider.setstatus(true);//variavel compartilhada
+                                  this.authProvider.rejeitadosFim(user);
+                                  this.authProvider.stop(user);
+                                  resolve({status:usuario.status.status,viagens:usuario.viagens});
+                                }else{
+                                    this.authProvider.setposition(usuario.DataHora);//variavel compartilhada
+                                    console.log("Erro");
+                                    resolve("Erro");
                                 }
-                        
-        }else  if(usuario.status.status == "aceito"){
-          
-            that.dadosprovider.getviagens(usuario.viagens).once("value", userProfileSnapshot => {
-              let result2:any = userProfileSnapshot.val();
-
-                console.log("atualização");
-
-                    if(result2.user == usuario.viagens && usuario.viagens != "vazio" && result2.usert == usuario.id){
-
-                      console.log("status viagem ",result2.status);
-                      that.insomnia.keepAwake()
-                      .then(
-                        () => console.log('success'),
-                        () => console.log('error')
-                      );
-                      that.authProvider.setAceito(true);
-                      that.authProvider.setposition(usuario.DataHora);
-                      let userPass = usuario.viagens;
-                      that.authProvider.setUserp(usuario.viagens);
-                      that.authProvider.setstatus(true);
-                      that.localNotifications.clear(1);
-                      that.authProvider.setAceito(true);
-                      let info = result2;
-                      let latlon = {lat:info.latd,lgn:info.lond};
-                      let way = {lat:info.latp,lgn:info.lonp};
-                      console.log('way ' + way + 'latlon ' + latlon);  
-                      resolve({status:usuario.status.status,
-                               viagens:usuario.viagens,
-                               info:info,
-                               userPass: userPass,
-                               latlon: latlon,
-                               way:way});
-                      }else{
-                        that.authProvider.setposition(usuario.DataHora);
-                        that.authProvider.rejeitadosFim(user);
-                        that.authProvider.setstatus(true);
-                        resolve({status:"Erro/indisponivel"});
-                      }
-               
-               },error=>{
-                 console.log("Erro");
-                 resolve("Erro");
-               });
-                                
-        }else if(usuario.status.status == "go"){
-           
-          
-            that.dadosprovider.getviagens(usuario.viagens).once("value", userProfileSnapshot => {
-              let result2:any = userProfileSnapshot.val();
-
-                console.log("atualização");
-
-                    if(result2.user == usuario.viagens && usuario.viagens != "vazio" && result2.usert == usuario.id){
-
-                      console.log("status viagem ",result2.status.status);
-                      that.insomnia.keepAwake()
-                      .then(
-                        () => console.log('success'),
-                        () => console.log('error')
-                      );
-                      let userPass = usuario.viagens;
-                      that.authProvider.setAceito(true);
-                      that.authProvider.setposition(usuario.DataHora);
-                      that.authProvider.setUserp(usuario.viagens);
-                      that.authProvider.setstatus(true);
-                      that.localNotifications.clear(1);
-                      that.authProvider.setAceito(true);
-                      let info = result2;
-                    
-                      let latlon = {lat:info.latd,lgn:info.lond};
-                      let way = {lat:info.latp,lgn:info.lonp};
-                      console.log('way ' + way + 'latlon ' + latlon);
-                      resolve({status:usuario.status.status,
-                               viagens:usuario.viagens,
-                               info:info,
-                               userPass: userPass,
-                               latlon: latlon,
-                               way:way});
-                      }else{
-                        that.authProvider.setposition(usuario.DataHora);
-                        that.authProvider.rejeitadosFim(user);
-                        that.authProvider.setstatus(true);
-                        resolve({status:"Erro/indisponivel"});
-                      }
-               },error=>{
-                 console.log("Erro");
-                resolve("Erro");
-              });
-                                
-          } else if(usuario.status.status == "stop" && that.authProvider.getUserp() == "vazio"){
-            
-                    that.dadosprovider.getviagens(usuario.viagens).once("value", userProfileSnapshot => {
-                    let result2:any = userProfileSnapshot.val();
-                                // that.toast("refviagens2");
-                      console.log("atualização");
-
-                          if(result2.user == usuario.viagens && usuario.viagens != "vazio" && result2.usert == usuario.id){
-                            that.authProvider.setposition(usuario.DataHora);
-                            console.log("stop");
-                            that.authProvider.setUserp(usuario.viagens);
-                            that.authProvider.rejeitadosFim(user);
-                            //that.toast("setuserp 1" + usuario.viagens);
-                            that.authProvider.setstatus(true);
-                            resolve({status:usuario.status.status,
-                                      viagens:usuario.viagens,});
+            }else if(usuario.status == "off"){
+                    this.authProvider.setposition(usuario.DataHora);//variavel compartilhada
+                    this.authProvider.rejeitar(user);
+                    resolve({status:usuario.status});
+                  }else if(usuario.status.status == "aceito"){
+                          this.dadosprovider.getviagens(usuario.viagens).once("value", userProfileSnapshot => {
+                            let viagem:any = userProfileSnapshot.val();
+                            console.log("atualização/aceito");
+                            if(viagem.user == usuario.viagens && usuario.viagens != "vazio" && viagem.usert == usuario.id){
+                              console.log("status viagem: ",viagem.status);
+                              this.insomnia.keepAwake().then(
+                                () => console.log('success/insomnia'),
+                                () => console.log('error/insomnia')
+                              );
+                              this.authProvider.setAceito(true);//variavel compartilhada
+                              this.authProvider.setposition(usuario.DataHora);//variavel compartilhada
+                              let userPass = usuario.viagens;
+                              this.authProvider.setUserp(usuario.viagens);//variavel compartilhada
+                              this.authProvider.setstatus(true);//variavel compartilhada
+                              this.localNotifications.clear(1);
+                              let info = viagem;
+                              let latlon = {lat:info.latd,lgn:info.lond};
+                              let way = {lat:info.latp,lgn:info.lonp};
+                              console.log('way ' + way + 'latlon ' + latlon);  
+                              resolve({status:usuario.status.status,
+                                      viagens:usuario.viagens,
+                                      info:info,
+                                      userPass: userPass,
+                                      latlon: latlon,
+                                      way:way});
                             }else{
-                              that.authProvider.setposition(usuario.DataHora);
-                              that.authProvider.rejeitadosFim(user);
-                              that.authProvider.setstatus(true);
-                              resolve({status:"Erro/indisponivel"});
+                                this.authProvider.setposition(usuario.DataHora);//variavel compartilhada
+                                this.authProvider.rejeitadosFim(user);
+                                this.authProvider.setstatus(true);//variavel compartilhada
+                                this.authProvider.stop(user);
+                                this.authProvider.rejeitar(user);
+                                resolve({status:"Erro/indisponivel"});
                             }
-                      },error=>{
-                        console.log("Erro");
-                      resolve("Erro");
-                    });
-            
-          }else{
-            console.log("Erro");
-            resolve("Erro");
-          }
+                          },error=>{
+                                console.log("Erro: ",error);
+                                resolve("Erro");
+                            });   
+                        }else if(usuario.status.status == "go"){
+                                this.dadosprovider.getviagens(usuario.viagens).once("value", userProfileSnapshot => {
+                                    let viagem:any = userProfileSnapshot.val();
+                                    console.log("atualização/go");
+                                    if(viagem.user == usuario.viagens && usuario.viagens != "vazio" && viagem.usert == usuario.id){
+                                        console.log("status viagem ",viagem.status.status);
+                                        this.insomnia.keepAwake().then(
+                                          () => console.log('success/insomnia'),
+                                          () => console.log('error/insomnia')
+                                        );
+                                        let userPass = usuario.viagens;
+                                        this.authProvider.setAceito(true);//variavel compartilhada
+                                        this.authProvider.setposition(usuario.DataHora);//variavel compartilhada
+                                        this.authProvider.setUserp(usuario.viagens);//variavel compartilhada
+                                        this.authProvider.setstatus(true);//variavel compartilhada
+                                        this.localNotifications.clear(1);
+                                        let info = viagem;
+                                        let latlon = {lat:info.latd,lgn:info.lond};
+                                        let way = {lat:info.latp,lgn:info.lonp};
+                                        console.log('way ' + way + 'latlon ' + latlon);
+                                        resolve({status:usuario.status.status,
+                                                viagens:usuario.viagens,
+                                                info:info,
+                                                userPass: userPass,
+                                                latlon: latlon,
+                                                way:way});
+                                    }else{
+                                        this.authProvider.setposition(usuario.DataHora);//variavel compartilhada
+                                        this.authProvider.rejeitadosFim(user);//variavel compartilhada
+                                        this.authProvider.setstatus(true);//variavel compartilhada
+                                        this.authProvider.stop(user);
+                                        this.authProvider.rejeitar(user);
+                                        resolve({status:"Erro/indisponivel"});
+                                    }
+                                },error=>{
+                                    console.log("Erro: ",error);
+                                    resolve("Erro");
+                                  });       
+                              }else if(usuario.status.status == "stop" && this.authProvider.getUserp() == "vazio"){
+                                      this.dadosprovider.getviagens(usuario.viagens).once("value", userProfileSnapshot => {
+                                          let viagem:any = userProfileSnapshot.val();
+                                          console.log("atualização/stop");
+                                          if(viagem.user == usuario.viagens && usuario.viagens != "vazio" && viagem.usert == usuario.id){
+                                            console.log("status viagem ",viagem.status.status);
+                                            this.authProvider.setposition(usuario.DataHora);//variavel compartilhada
+                                            this.authProvider.setUserp(usuario.viagens);//variavel compartilhada
+                                            this.authProvider.setstatus(true);//variavel compartilhada
+                                            this.authProvider.rejeitadosFim(user);
+                                            resolve({status:usuario.status.status,
+                                                      viagens:usuario.viagens,});
+                                          }else{
+                                              this.authProvider.setposition(usuario.DataHora);//variavel compartilhada
+                                              this.authProvider.rejeitadosFim(user);//variavel compartilhada
+                                              this.authProvider.setstatus(true);//variavel compartilhada
+                                              this.authProvider.rejeitar(user);
+                                              resolve({status:"Erro/indisponivel"});
+                                          }
+                                      },error=>{
+                                            console.log("Erro: ", error);
+                                            resolve("Erro");
+                                        });
+                  
+                                    }else{
+                                      console.log("Erro");
+                                      resolve("Erro");
+                                    }
+                  
           
-      },error =>{
-        console.log("Erro");
-        resolve("Erro");
+        },error =>{
+              console.log("Erro: ", error);
+              resolve("Erro");
+          });
       });
-    });
-    },500);
-
-  }); 
-  }
-
-  statusCorrida(){
-    let that = this;
-    let observable = new Observable(observer => { 
-  setTimeout(() => {
-      that.dadosprovider.getuser().then((user) =>{
-		      that.dadosprovider.getDriver(user).on("value", userProfileSnapshot => {
-			      let result:any = userProfileSnapshot.val();
-            
-			      if(that.authProvider.getstatus()  == true){
-                
-				    //console.log("result driveron ",result);
-					
-					  if(that.authProvider.getAceito() == false){
-					     
-						//console.log("result[i].id ",result.id);
-						//console.log("user ",result.user);
-						//console.log("resulti user ",result.id);
-                      
-						//console.log("userPass antes ",result.viagens);
-                        
-						let userPass = "vazio";
-                        
-						if(result.viagens != "vazio" && result.status != "off"){
-						    if(result.status.status != "go" && result.status.status != "aceito"){
-                  console.log("statusCorrida: viagem pendente ",result);
-                  observer.next({info:"new",userPass: result.viagens});
-							  }
-					  }                        
-					}
-			}
-    },erro=>{
-      observer.next({info:"Erro"});
-    });
-  });
-}, 500);
-});
-  return observable;
+    }); 
   }
 
   StatusViagem(userPass,status){
     return new Promise((resolve,reject) => {
-    this.dadosprovider.getviagens(userPass).once("value", (userProfileSnapshot:any) =>{
-      let result = userProfileSnapshot.val();
-      this.dadosprovider.getuser().then(user=>{
-      if(result.status  != "off" && result.usert == user){
-        if(result.status  == status){
-          if(this.authProvider.getstatus()  == true){
-            resolve({status:result.status});
+      this.dadosprovider.getviagens(userPass).once("value", (userProfileSnapshot:any) =>{
+        let viagem = userProfileSnapshot.val();
+        this.dadosprovider.getuser().then(user=>{
+          if(viagem.status  != "off" && viagem.usert == user){
+            if(viagem.status == status){
+              if(this.authProvider.getstatus()  == true){
+                resolve({status:"OK"});
+              }else{
+                resolve({status:"Erro"});
+              }
+            }else{
+              resolve({status:"Erro/status"});
+            }
           }else{
-            resolve({status:"Erro"});
+             resolve({status:"Erro"});
           }
-        }else{
-            resolve({status:result.status});
-        }
-      }else{
-            resolve({status:"Erro"});
-      }
+        });
+      },error=>{
+        console.log("Error/StatusViagem: ",error);
+        resolve({status:"Erro"});
+        });
+    });          
+  }
+
+  NewCorrida(){
+      let observable = new Observable(observer => { 
+        this.dadosprovider.getuser().then((user) =>{
+		      this.dadosprovider.getDriver(user).on("value", userProfileSnapshot => {
+			      let driver:any = userProfileSnapshot.val();
+			      if(this.authProvider.getstatus()  == true){
+					    if(this.authProvider.getAceito() == false){
+						    if(driver.viagens != "vazio" && driver.status != "off"){
+						      if(driver.status.status == "stop"){
+                    this.authProvider.setUserp(driver.viagens);//variavel compartilhada
+                    observer.next({info:"new",userPass: driver.viagens});
+							    }
+					      }                        
+					    }
+			      }
+          },error=>{
+                console.log("Error/statusCorrida: ",error);
+                observer.next({info:"Erro"});
+          });
+        });
       });
-    },error=>{
-      resolve({status:"Erro"});
-    });
-  
-  });          
+      return observable;
   }
 
   getInfo(userPass){
     return new Promise((resolve,reject) => {
     this.dadosprovider.getviagens(userPass).once("value", (userProfileSnapshot:any) =>{
-      let result = userProfileSnapshot.val();
-      if(result.status  == "on"){
-      if(this.authProvider.getstatus()  == true){
-        console.log("viagem nova ",result);
-        //this.navCtrl.popAll();
-        this.authProvider.Ocupado(true);
-        this.localNotifications.schedule({
-          id: 1,
-          text: 'solicitação de viagem para:' + result.destino,
-          icon:'../assets/images/icon4.png',
-          color: 'FFFF00'
-        });
-        this.audio.play('tabSwitch');	
-        this.vibration.vibrate([5000,5000,5000]);
-        resolve({status:"OK",result:result});
+      let viagem = userProfileSnapshot.val();
+      if(viagem.status  == "on" || viagem.status  == "enviado"){
+        if(this.authProvider.getstatus() == true){
+          console.log("viagem nova ",viagem);
+          //this.navCtrl.popAll();
+          this.localNotifications.schedule({
+            id: 1,
+            text: 'solicitação de viagem para:' + viagem.destino,
+            icon:'../src/assets/images/icon4.png',
+            color: 'FFFF00'
+          });
+          this.audio.play('tabSwitch');	
+          this.vibration.vibrate([5000,5000,5000]);
+          resolve({status:"OK",result:viagem});
+        }else{
+          resolve({status:"Erro/getstatus"});
+         }
       }else{
-        resolve({status:"Erro"});
-      }
-    }else{
         console.log("viagem não está disponivel ");
-          this.dadosprovider.getuser().then(user=>{
+        this.dadosprovider.getuser().then(user=>{
           this.authProvider.stop(user);
           this.authProvider.rejeitar(user);
         });
-        resolve({status:"Erro"});
-    }
+        resolve({status:"Erro/nao_e_on"});
+      }
     },error=>{
-      resolve({status:"Erro"});
-    });
-  });          
+        console.log("Error/getInfo: ",error);
+        resolve({status:"Erro/getviagens/getInfo"});
+      });
+    });          
   }
 
   getuser(user){
@@ -311,30 +281,30 @@ export class BeginProvider {
           this.audio.stop('tabSwitch');
           this.insomnia.allowSleepAgain()
 					.then(
-						() => console.log('success'),
-						() => console.log('error')
+						() => console.log('success/insomnia'),
+						() => console.log('error/insomnia')
           );
-          this.authProvider.setUserp("vazio");
+          this.authProvider.setUserp("vazio");//variavel compartilhada
 					this.localNotifications.clear(1);
           this.vibration.vibrate(0);
           this.localNotifications.schedule({
 						id: 1,
 						text: 'O usuario cancelou a viagem',
-						icon:'../assets/images/icon4.png',
+						icon:'../src/assets/images/icon4.png',
 						color: 'FFFF00'
           });
           this.dadosprovider.getuser().then(usert=>{
             this.authProvider.stop(usert);
           });
-          this.authProvider.Ocupado(false);
           this.dadosprovider.stopUser(user.user);
           this.dadosprovider.stopviagens(user.user);
-          this.authProvider.setAceito(false);
+          this.authProvider.setAceito(false);//variavel compartilhada
           observer.next({status:"off"});
         }else{
           observer.next({status:userProfileSnapshot.val().status});
         }
       },error=>{
+        console.log("Error/getuser: ",error);
         observer.next({status:"Erro"});
       });
     });

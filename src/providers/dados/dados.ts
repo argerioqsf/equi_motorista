@@ -18,18 +18,13 @@ export class DadosProvider {
     latlng:any;
 	user:any;
   constructor(public afDB: AngularFireDatabase) {
-      
-      //this.teste = this.afDB.list('latlon').valueChanges();
-      //this.teste.subscribe(result => console.log('result',result));
-      //this.teste.subscribe(result => console.log(this.latlng = result));
    firebase.auth().onAuthStateChanged(user => {
-if (user) {
-
-this.user = user.uid;
-this.eventListRef = firebase.database().ref(`/DriverProfile/${user.uid}/latlon`);
-this.latlonr = firebase.database().ref(`/latlon/${user.uid}`);
-}
-});
+		if (user) {
+			this.user = user.uid;
+			this.eventListRef = firebase.database().ref(`/DriverProfile/${user.uid}/latlon`);
+			this.latlonr = firebase.database().ref(`/latlon/${user.uid}`);
+		}
+	});
   }
 
   	returnList(path){
@@ -126,7 +121,7 @@ this.latlonr = firebase.database().ref(`/latlon/${user.uid}`);
 									firebase.database().ref(`/historicoPass/${uid}/${id}`).update({
 										status: "finalizada",
 										usert: this.user
-										})
+									})
 
 								});
 		
@@ -145,11 +140,14 @@ this.latlonr = firebase.database().ref(`/latlon/${user.uid}`);
 		
 	}
 	getuser(): Promise<any>{
-   
       return new Promise((resolve, reject)=>{
-        resolve(this.user);
+		const unsubscribe = firebase.auth().onAuthStateChanged(user => {
+			resolve(user.uid);
+			unsubscribe();
+		});
       });
 	}
+
 	stopviagens(uid): firebase.database.Reference{
 		
 			return firebase.database().ref(`/viagens/${uid}`).off();
@@ -193,17 +191,4 @@ this.latlonr = firebase.database().ref(`/latlon/${user.uid}`);
         });
     }
     
-    getlatlon(){
-        return this.latlng;
-        
-    }
-    
-    getEventList():firebase.database.Reference {
-        return this.eventListRef;
-    }
-    
-    getEventDetail(eventId:string):firebase.database.Reference {
-        return this.eventListRef.child(eventId);
-    }   
-
 }

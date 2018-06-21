@@ -1,8 +1,6 @@
 import { Injectable, ViewChild} from '@angular/core';
 import { DadosProvider } from '../dados/dados';
-import { LocalNotifications } from '@ionic-native/local-notifications';
 import { AlertController } from 'ionic-angular';
-import { SviagensPage} from '../../pages/sviagens/sviagens';
 /*
   Generated class for the PagamentoProvider provider.
 
@@ -12,7 +10,6 @@ import { SviagensPage} from '../../pages/sviagens/sviagens';
 @Injectable()
 export class PagamentoProvider {
   constructor(private dadosProvider: DadosProvider,
-              private localNotifications:LocalNotifications,
               private alertCtrl: AlertController,) {
     console.log('Hello PagamentoProvider Provider');
   }
