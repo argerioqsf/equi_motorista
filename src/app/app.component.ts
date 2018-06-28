@@ -77,37 +77,13 @@ export class MyApp {
 		if (!user) {
 			this.rootPage = LoginPage;
 			//unsubscribe();
-			} else {
+			}else {
 				this.user = user.uid;
 				this.userProfile = firebase.database().ref(`/DriverProfile/${user.uid}`);
-				this.getUserProfile().on("value", userProfileSnapshot => {
-				if(userProfileSnapshot.val()){
-				if(userProfileSnapshot.val().status != "off"){
-					if(userProfileSnapshot.val().status.status == "aceito"){
-					this.setBackground( "Você aceitou uma corrida","Va até o passageiro.");
-					}
-					if(userProfileSnapshot.val().status.status == "go"){
-						this.setBackground( "Você iniciou uma corrida","Leve o passageiro ao seu destino.");
-					}
-					if(userProfileSnapshot.val().status.status == "stop"){
-						this.setBackground("Você está ativo","Será notificado quando houver solicitações de viagens novas.",);
-					}}
-        		
-        		this.authProvider.atualizar_versao(this.user);
-				this.name = userProfileSnapshot.val().firstName + " " + userProfileSnapshot.val().lastName;
-				this.userProfile2 = userProfileSnapshot.val();
-				this.imageuid = userProfileSnapshot.val().imageuid;
-				this.image = userProfileSnapshot.val().image;	
-				this.imageCar = userProfileSnapshot.val().carro.imagecar;
+				this.AtualizarStatus();
 				this.rootPage = HomePage;
 				unsubscribe();
-				}else{
-					this.rootPage = LoginPage;
-				}
-				});
-				
-				
-					}
+			}
 	});
 
     // itens do menu
@@ -119,11 +95,39 @@ export class MyApp {
       
     ];
   }
+   AtualizarStatus(){
+	this.getUserProfile().on("value", userProfileSnapshot => {
+		if(userProfileSnapshot.val()){
+		if(userProfileSnapshot.val().status != "off"){
+			if(userProfileSnapshot.val().status.status == "aceito"){
+			this.setBackground( "Você aceitou uma corrida","Va até o passageiro.");
+			}
+			if(userProfileSnapshot.val().status.status == "go"){
+				this.setBackground( "Você iniciou uma corrida","Leve o passageiro ao seu destino.");
+			}
+			if(userProfileSnapshot.val().status.status == "stop"){
+				this.setBackground("Você está ativo","Será notificado quando houver solicitações de viagens novas.",);
+			}}
+		
+		this.authProvider.atualizar_versao(this.user);
+		this.name = userProfileSnapshot.val().firstName + " " + userProfileSnapshot.val().lastName;
+		this.userProfile2 = userProfileSnapshot.val();
+		this.imageuid = userProfileSnapshot.val().imageuid;
+		this.image = userProfileSnapshot.val().image;	
+		this.imageCar = userProfileSnapshot.val().carro.imagecar;
+		
+		}else{
+			this.rootPage = LoginPage;
+		}
+		});
+   }
     //recupera as informações do usuario do firebase
     getUserProfile(): firebase.database.Reference {
-        //console.log('profile 2 ',this.userProfile);
 		return this.userProfile;
-	  }
+	}
+	stopUserProfile(): firebase.database.Reference {
+		return this.userProfile.off();
+	}
   	initializeApp() {
     	this.platform.ready().then(() => {
       		// Okay, so the platform is ready and our plugins are available.
@@ -137,13 +141,8 @@ export class MyApp {
     DataAtual(){
       let ano = new Date().getFullYear();
 			let mes:any = new Date().getMonth() + 1;
-			if(mes < 10){
-				mes = "0" + mes;
-			}
 			let dia:any = new Date().getDate();
-			if(dia < 10){
-				dia = "0" + dia;
-			}
+			let segundos:any = new Date().getSeconds();
 			let horas:any = new Date().getHours();
 			if(horas < 10){
 				horas = "0" + this.horas;
@@ -152,10 +151,6 @@ export class MyApp {
 			if(minutos < 10){
 				minutos = "0" + this.minutos;
 			}
-			let segundos:any = new Date().getSeconds();
-			if(segundos < 10){
-				 segundos = "0" + this.segundos;
-      }
       let dataNow = { dataNow : ano + mes + dia + horas + minutos + segundos,
                       ano:ano,
                       mes:mes,
@@ -260,7 +255,8 @@ export class MyApp {
                         this.back();
                       }
             				  this.authProvider.logoutUser().then(() => {
-							          this.nav.setRoot(LoginPage);
+									  this.nav.setRoot(LoginPage);
+									  //this.stopUserProfile();
 							        });
 							        //console.log("sair");
           				}
@@ -277,7 +273,7 @@ export class MyApp {
 	 }
 	
 	 Alert(option) {
-		 if(this.authProvider.getUserp() != "vazio" ){
+		 if(this.authProvider.getUserp() == "vazio" ){
 		    if(option == false){
 		    let alert1 = this.alertCtrl.create({
       			title: 'Deseja ficar online?',
@@ -388,7 +384,7 @@ export class MyApp {
 				
           
 			if(that.authProvider.getstatus() == true){
-        //console.log("dataHoje");
+
 				if(that.authProvider.getUserp() == "vazio"){
 
 					that.audio.stop('tabSwitch');
@@ -421,7 +417,7 @@ export class MyApp {
 		    that.authProvider.setStatus(that.horas,that.minutos,that.ano,that.mes,that.dia,that.user).then(() =>{
 				
 			}).catch(error =>{
-	      alert("app.component.ts/erro no datahoje()");
+	      		alert("app.component.ts/erro no datahoje()");
 			});
 			
 			}
@@ -498,7 +494,6 @@ export class MyApp {
 		  }else{
 
     	if( page.component == 'sair'){
-			
 			this.Alert2();
     	}
       	else{

@@ -75,7 +75,7 @@ export class DadosProvider {
 
 	stopHisto(uid,id){
 
-		return firebase.database().ref(`/historicoPass/${uid}/${id}`).off;
+		return firebase.database().ref(`/historicoPass/${uid}/${id}`).off();
 	}
 
 	setHisto(histo){

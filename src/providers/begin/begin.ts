@@ -78,6 +78,7 @@ export class BeginProvider {
                   }else if(usuario.status.status == "aceito"){
                           this.dadosprovider.getviagens(usuario.viagens).once("value", userProfileSnapshot => {
                             let viagem:any = userProfileSnapshot.val();
+                            if(viagem){
                             console.log("atualização/aceito");
                             if(viagem.user == usuario.viagens && usuario.viagens != "vazio" && viagem.usert == usuario.id){
                               console.log("status viagem: ",viagem.status);
@@ -108,7 +109,14 @@ export class BeginProvider {
                                 this.authProvider.stop(user);
                                 this.authProvider.rejeitar(user);
                                 resolve({status:"Erro/indisponivel"});
-                            }
+                            }}else{
+                              this.authProvider.setposition(usuario.DataHora);//variavel compartilhada
+                              this.authProvider.rejeitadosFim(user);//variavel compartilhada
+                              this.authProvider.setstatus(true);//variavel compartilhada
+                              this.authProvider.stop(user);
+                              this.authProvider.rejeitar(user);
+                              resolve({status:"Erro/indisponivel"});
+                              }
                           },error=>{
                                 console.log("Erro: ",error);
                                 resolve("Erro");
@@ -117,6 +125,7 @@ export class BeginProvider {
                                 this.dadosprovider.getviagens(usuario.viagens).once("value", userProfileSnapshot => {
                                     let viagem:any = userProfileSnapshot.val();
                                     console.log("atualização/go");
+                                    if(viagem){
                                     if(viagem.user == usuario.viagens && usuario.viagens != "vazio" && viagem.usert == usuario.id){
                                         console.log("status viagem ",viagem.status.status);
                                         this.insomnia.keepAwake().then(
@@ -146,6 +155,13 @@ export class BeginProvider {
                                         this.authProvider.stop(user);
                                         this.authProvider.rejeitar(user);
                                         resolve({status:"Erro/indisponivel"});
+                                    }}else{
+                                        this.authProvider.setposition(usuario.DataHora);//variavel compartilhada
+                                        this.authProvider.rejeitadosFim(user);//variavel compartilhada
+                                        this.authProvider.setstatus(true);//variavel compartilhada
+                                        this.authProvider.stop(user);
+                                        this.authProvider.rejeitar(user);
+                                        resolve({status:"Erro/indisponivel"});
                                     }
                                 },error=>{
                                     console.log("Erro: ",error);
@@ -155,6 +171,7 @@ export class BeginProvider {
                                       this.dadosprovider.getviagens(usuario.viagens).once("value", userProfileSnapshot => {
                                           let viagem:any = userProfileSnapshot.val();
                                           console.log("atualização/stop");
+                                          if(viagem){
                                           if(viagem.user == usuario.viagens && usuario.viagens != "vazio" && viagem.usert == usuario.id){
                                             console.log("status viagem ",viagem.status.status);
                                             this.authProvider.setposition(usuario.DataHora);//variavel compartilhada
@@ -169,7 +186,14 @@ export class BeginProvider {
                                               this.authProvider.setstatus(true);//variavel compartilhada
                                               this.authProvider.rejeitar(user);
                                               resolve({status:"Erro/indisponivel"});
-                                          }
+                                          }}else{
+                                              this.authProvider.setposition(usuario.DataHora);//variavel compartilhada
+                                              this.authProvider.rejeitadosFim(user);//variavel compartilhada
+                                              this.authProvider.setstatus(true);//variavel compartilhada
+                                              this.authProvider.stop(user);
+                                              this.authProvider.rejeitar(user);
+                                              resolve({status:"Erro/indisponivel"});
+                                            }
                                       },error=>{
                                             console.log("Erro: ", error);
                                             resolve("Erro");
@@ -243,29 +267,40 @@ export class BeginProvider {
     return new Promise((resolve,reject) => {
     this.dadosprovider.getviagens(userPass).once("value", (userProfileSnapshot:any) =>{
       let viagem = userProfileSnapshot.val();
-      if(viagem.status  == "on" || viagem.status  == "enviado"){
-        if(this.authProvider.getstatus() == true){
-          console.log("viagem nova ",viagem);
-          //this.navCtrl.popAll();
-          this.localNotifications.schedule({
-            id: 1,
-            text: 'solicitação de viagem para:' + viagem.destino,
-            icon:'../src/assets/images/icon4.png',
-            color: 'FFFF00'
-          });
-          this.audio.play('tabSwitch');	
-          this.vibration.vibrate([5000,5000,5000]);
-          resolve({status:"OK",result:viagem});
-        }else{
-          resolve({status:"Erro/getstatus"});
-         }
-      }else{
-        console.log("viagem não está disponivel ");
+      if(viagem){
         this.dadosprovider.getuser().then(user=>{
-          this.authProvider.stop(user);
-          this.authProvider.rejeitar(user);
+          if((viagem.status  == "on" || viagem.status  == "enviado") && viagem.usert == user){
+            if(this.authProvider.getstatus() == true){
+              console.log("viagem nova ",viagem);
+              //this.navCtrl.popAll();
+              this.localNotifications.schedule({
+                id: 1,
+                text: 'solicitação de viagem para:' + viagem.destino,
+                icon:'../src/assets/images/icon4.png',
+                color: 'FFFF00'
+              });
+              this.audio.play('tabSwitch');	
+              this.vibration.vibrate([5000,5000,5000]);
+              resolve({status:"OK",result:viagem});
+            }else{
+              resolve({status:"Erro/getstatus"});
+            }
+          }else{
+            console.log("viagem não está disponivel ");
+            this.dadosprovider.getuser().then(user=>{
+              this.authProvider.stop(user);
+              this.authProvider.rejeitar(user);
+            });
+            resolve({status:"Erro/informacoes_erradas"});
+          }
         });
-        resolve({status:"Erro/nao_e_on"});
+      }else{
+        console.log("viagem não encontrada");
+        this.dadosprovider.getuser().then(user=>{
+            this.authProvider.stop(user);
+            this.authProvider.rejeitar(user);
+        });
+        resolve({status:"Erro/viagem_nao_encontrada"});
       }
     },error=>{
         console.log("Error/getInfo: ",error);

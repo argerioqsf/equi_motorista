@@ -337,7 +337,6 @@ directionsDisplay = new google.maps.DirectionsRenderer;
           if(this.disTime == false){
             if(resp.status == "OK"){
               this.backgroundMode.unlock();
-              console.log("viagem nova");
               this.info = resp.result;
               this.getuser(resp.result);
               this.getUsuario(resp.result);

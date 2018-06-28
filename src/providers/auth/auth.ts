@@ -6,7 +6,7 @@ import firebase from 'firebase';
 
 export class AuthProvider {
 
-ver = "1.2.20";
+ver = "1.2.25";
 notificado = false;
 status = false;
 position:any = "off";

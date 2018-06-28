@@ -1,4 +1,3 @@
-// Initialize Firebase
 export const FIREBASE_CREDENTIALS = {
     apiKey: "AIzaSyAFURA4FpZcSwCPZQMGspB3GlwjXCpd38c",
     authDomain: "taxi-831b2.firebaseapp.com",
